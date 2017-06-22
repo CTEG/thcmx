@@ -36,26 +36,22 @@
 
 #include <pthread.h>
 
-typedef enum
-{
+
+
+typedef enum {
     THREAD_TYPE_JOINABLE = 0,
     THREAD_TYPE_DETACHED
-}
-thread_type_t;
+} thread_type_t;
 
-typedef struct
-{
+typedef struct {
     thread_type_t type;
     pthread_attr_t attr;
-}
-thread_ctx_t;
+} thread_ctx_t;
 
-typedef struct
-{
+typedef struct {
     thread_type_t type;
     pthread_t id;
-}
-thread_t;
+} thread_t;
 
 int thread_joinable_ctx_create(thread_ctx_t *ctx);
 int thread_detached_ctx_create(thread_ctx_t *ctx);
