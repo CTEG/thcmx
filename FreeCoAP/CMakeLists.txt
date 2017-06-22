@@ -18,8 +18,9 @@ set(BUILDDIR ${TOPDIR}/cmake_build/build)
 #add_definitions(-DSOCK_IP6)
 add_definitions(-DCOAP_DTLS_EN)
 
-#add_subdirectory(${TOPDIR}/common/src ${BUILDDIR}/common/src)
-#add_subdirectory(${TOPDIR}/common/test ${BUILDDIR}/common/test)
 
 add_subdirectory(${TOPDIR}/coap/src ${BUILDDIR}/coap/src)
 add_subdirectory(${TOPDIR}/coap/test ${BUILDDIR}/coap/test)
+
+
+add_subdirectory(${TOPDIR}/proxy/http_coap/src ${BUILDDIR}/proxy/http_coap/src)

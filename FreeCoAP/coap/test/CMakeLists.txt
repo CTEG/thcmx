@@ -61,3 +61,13 @@ target_link_libraries(test_http_msg coap)
 #################################
 add_executable(test_http_client test.c test_http_client.c)
 target_link_libraries(test_http_client coap gmp hogweed nettle gnutls pthread)
+
+
+#################################
+add_executable(test_tls_client test.c test_tls_client.c)
+target_link_libraries(test_tls_client coap gmp hogweed nettle gnutls pthread)
+
+
+#################################
+add_executable(test_tls_server test.c test_tls_server.c)
+target_link_libraries(test_tls_server coap gmp hogweed nettle gnutls pthread)
