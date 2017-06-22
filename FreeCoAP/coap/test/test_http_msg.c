@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+
 #include "http_msg.h"
 #include "test.h"
 
@@ -66,8 +67,7 @@ typedef struct
     const char *exp_body;                                                       /**< String containing an expected HTTP body */
     const char *exp_str;                                                        /**< String containing an expected HTTP message */
     size_t exp_str_len;                                                         /**< Length of the string containing an expected HTTP message */
-}
-test_http_msg_data_t;
+} test_http_msg_data_t;
 
 #define TEST1_NUM_HEADERS  2
 

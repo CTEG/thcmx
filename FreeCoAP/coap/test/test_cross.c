@@ -36,6 +36,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
+
 #include "cross.h"
 #include "coap_log.h"
 #include "test.h"
@@ -51,8 +52,7 @@ typedef struct
     unsigned num;                                                               /**< Option number */
     unsigned len;                                                               /**< Option length */
     char *val;                                                                  /**< Pointer to a buffer containing the option value */
-}
-test_coap_msg_op_t;
+} test_coap_msg_op_t;
 
 /**
  *  @brief HTTP/CoAP message/URI cross test data structure
@@ -72,8 +72,7 @@ typedef struct
     unsigned num_coap_ops;                                                      /**< Size of the array of CoAP message option test data structures */
     char *coap_payload;                                                         /**< Buffer containing a CoAP payload */
     size_t coap_payload_len;                                                    /**< Length of the buffer containing a CoAP payload */
-}
-test_cross_data_t;
+} test_cross_data_t;
 
 /*    1           host,    port,    path,    query        coaps://host:1234/path?query
  *    2           host,    port,    path,    query        coaps://host:1234/root/path?query&extra
