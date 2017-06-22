@@ -15,6 +15,7 @@ set(BUILDDIR ${TOPDIR}/cmake_build/build)
 #add_compile_options(-DBUILD_SSL)
 
 #add_definitions(-DCOAP_IP6)
+#add_definitions(-DSOCK_IP6)
 add_definitions(-DCOAP_DTLS_EN)
 
 #add_subdirectory(${TOPDIR}/common/src ${BUILDDIR}/common/src)
