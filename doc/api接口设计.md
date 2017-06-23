@@ -53,3 +53,6 @@ http://api.domain.com/GetProducts?key=076ba2bcb4a0cb38ce721cc00d27426b&pageindex
 [Rest API 开发](http://www.cnblogs.com/springyangwc/archive/2012/01/18/2325784.html)  
 [理解RESTful架构](http://kb.cnblogs.com/page/114905/)  
 [RESTful HTTP的实践](http://www.infoq.com/cn/articles/designing-restful-http-apps-roth)  
+[API请求签名服务器校验猜测](http://www.cnblogs.com/jecob/p/4864130.html)   
+[Web API系列(一)设计经验与总结](http://www.cnblogs.com/zhangweizhong/p/5475158.html)  
+[Web API系列(二)接口安全和参数校验]()  
