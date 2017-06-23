@@ -39,7 +39,10 @@
 /**
  *  @brief Test result enumeration
  */
-typedef enum {FAIL = 0, PASS} test_result_t;
+typedef enum {
+	FAIL = 0,
+	PASS
+} test_result_t;
 
 /**
  *  @brief Test data typedef
@@ -54,12 +57,10 @@ typedef test_result_t (*test_func_t)(test_data_t);
 /**
  *  @brief Test structure
  */
-typedef struct
-{
+typedef struct {
     test_func_t func;                                                           /**< Test function */
     test_data_t data;                                                           /**< Test data */
-}
-test_t;
+} test_t;
 
 /**
  *  @brief Run the tests

@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "test.h"
 
 #define START_STR   "\n----------------------------------------\n"              /**< String printed at the start of a test */
@@ -46,23 +47,22 @@ unsigned test_run(test_t *test, unsigned num_tests)
     unsigned i = 0;
 
     printf(START_STR);
-    for (i = 0; i < num_tests; i++)
-    {
+
+    for (i = 0; i < num_tests; i++) {
         result = (*test[i].func)(test[i].data);
-        if (result == PASS)
-        {
+        if (result == PASS) {
             num_passed++;
             printf(PASS_STR);
-        }
-        else
-        {
+        } else {
             printf(FAIL_STR);
         }
     }
-    if (num_passed < num_tests)
+
+    if (num_passed < num_tests) {
         printf("\n[Total: %u, Pass: %u, Fail: %u]\n\n", num_tests, num_passed, num_tests - num_passed);
-    else
+    } else {
         printf("\n[Total: %u, Pass: %u]\n\n", num_tests, num_passed);
+    }
 
     return num_passed;
 }

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <time.h>
+
 #include "thread.h"
 #include "test.h"
 
@@ -58,14 +59,12 @@ static inline void long_sleep(void)
     nanosleep(&ts, NULL);
 }
 
-typedef struct
-{
+typedef struct {
     const char *desc;
     unsigned long val;
     unsigned long thread1_result;
     unsigned long thread2_result;
-}
-test_thread_data_t;
+} test_thread_data_t;
 
 test_thread_data_t test1_data =
 {
@@ -100,41 +99,42 @@ test_result_t test1_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = thread_joinable_ctx_create(&ctx);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return FAIL;
     }
+
     ret = thread_init(&thread1, &ctx, test1_func1, (void *)test_data->val);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     ret = thread_init(&thread2, &ctx, test1_func2, (void *)test_data->val);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     ret = thread_join(&thread1, (void **)&thread1_result);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     ret = thread_join(&thread2, (void **)&thread2_result);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     if ((thread1_result != test_data->thread1_result)
-     || (thread2_result != test_data->thread2_result))
-    {
+            || (thread2_result != test_data->thread2_result)) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     thread_ctx_destroy(&ctx);
+
     return PASS;
 }
 
@@ -174,34 +174,35 @@ test_result_t test2_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = thread_detached_ctx_create(&ctx);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return FAIL;
     }
+
     ret = thread_init(&thread1, &ctx, test2_func1, (void *)test_data->val);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     ret = thread_init(&thread2, &ctx, test2_func2, (void *)test_data->val);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     while ((test2_func1_data == 0)
-        && (test2_func2_data == 0))
-    {
+                && (test2_func2_data == 0)) {
         short_sleep();
     }
+
     if ((test2_func1_data != test_data->thread1_result)
-     && (test2_func2_data != test_data->thread2_result))
-    {
+            && (test2_func2_data != test_data->thread2_result)) {
         thread_ctx_destroy(&ctx);
         return FAIL;
     }
+
     thread_ctx_destroy(&ctx);
+    
     return PASS;
 }
 

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+
 #include "data_buf.h"
 #include "test.h"
 
@@ -48,16 +49,18 @@ static size_t test_data_buf_memcpy(data_buf_t *buf, const char *data, size_t len
 
     next = data_buf_get_next(buf);
     space = data_buf_get_space(buf);
-    if (len <= space)
+    if (len <= space) {
         num = len;
-    else
+    } else {
         num = space;
+    }
+
     memcpy(next, data, num);
+
     return data_buf_add(buf, num);
 }
 
-typedef struct
-{
+typedef struct {
     const char *desc;
     size_t size;
     size_t max_size;
@@ -67,8 +70,7 @@ typedef struct
     size_t str1_len;
     const char *str2;
     size_t str2_len;
-}
-test_data_buf_data_t;
+} test_data_buf_data_t;
 
 static test_data_buf_data_t test1_data =
 {

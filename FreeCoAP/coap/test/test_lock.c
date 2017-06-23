@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "lock.h"
 #include "test.h"
 
@@ -86,8 +87,7 @@ test_result_t test1_func(test_data_t data)
 typedef struct
 {
     const char *desc;
-}
-test_lock_data2_t;
+} test_lock_data2_t;
 
 test_lock_data2_t test2_data =
 {

@@ -34,22 +34,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
 #include "data_buf.h"
+
+
 
 int data_buf_create(data_buf_t *buf, size_t size, size_t max_size)
 {
     memset(buf, 0, sizeof(data_buf_t));
-    if (size > max_size)
-    {
+
+    if (size > max_size) {
         return -EINVAL;
     }
+
     buf->data = (char *)calloc(size + 1, 1);
-    if (buf->data == NULL)
-    {
+    if (buf->data == NULL) {
         return -ENOMEM;
     }
+
     buf->size = size;
     buf->max_size = max_size;
+    
     return 0;
 }
 
@@ -57,6 +62,8 @@ void data_buf_destroy(data_buf_t *buf)
 {
     free(buf->data);
     memset(buf, 0, sizeof(data_buf_t));
+
+    return;
 }
 
 int data_buf_expand(data_buf_t *buf)
@@ -65,20 +72,21 @@ int data_buf_expand(data_buf_t *buf)
     char *new_data = NULL;
 
     new_size = 2 * buf->size;
-    if (new_size > buf->max_size)
-    {
+    if (new_size > buf->max_size) {
         return -EINVAL;
     }
+
     new_data = (char *)malloc(new_size + 1);
-    if (new_data == NULL)
-    {
+    if (new_data == NULL) {
         return -ENOMEM;
     }
+
     memcpy(new_data, buf->data, buf->count);
     memset(new_data + buf->count, 0, new_size - buf->count);
     free(buf->data);
     buf->data = new_data;
     buf->size = new_size;
+
     return 0;
 }
 
@@ -87,18 +95,24 @@ size_t data_buf_add(data_buf_t *buf, size_t num)
     size_t space = 0;
 
     space = data_buf_get_space(buf);
-    if (num > space)
+    if (num > space) {
         num = space;
+    }
+
     buf->count += num;
+
     return num;
 }
 
 size_t data_buf_consume(data_buf_t *buf, size_t num)
 {
-    if (num > buf->count)
+    if (num > buf->count) {
         num = buf->count;
+    }
+
     memmove(buf->data, buf->data + num, buf->size - num);
     memset(buf->data + buf->size - num, 0, num);
     buf->count -= num;
+
     return num;
 }
