@@ -2,9 +2,9 @@
 
 # remove a file if it exists
 function rmcond {
-    if [ -e $1 ]; then
-	/bin/rm $1
-    fi
+   if [ -e $1 ]; then
+      /bin/rm $1
+   fi
 }
 
 rmcond root_server_privkey.pem

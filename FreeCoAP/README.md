@@ -3,4 +3,5 @@
 
 ```
 $ sudo apt-get install libghc-gnutls-dev
+$ sudo apt-get install gnutls-bin
 ```
