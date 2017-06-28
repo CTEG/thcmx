@@ -41,73 +41,70 @@
  */
 size_t util_strncpy(char *dst, const char *src, size_t dst_len)
 {
-    size_t i = 0;
-    size_t j = 0;
+	size_t i = 0;
+	size_t j = 0;
 
-    if (dst_len == 0)
-    {
-        return 0;
-    }
-    while (src[j] != '\0')
-    {
-        if (i < (dst_len - 1))
-        {
-            dst[i] = src[j];
-            i++;
-        }
-        j++;
-    }
-    dst[i] = '\0';
-    return j;
+	if (dst_len == 0) {
+		return 0;
+	}
+
+	while (src[j] != '\0') {
+		if (i < (dst_len - 1)) {
+			dst[i] = src[j];
+			i++;
+		}
+		j++;
+	}
+	dst[i] = '\0';
+
+	return j;
 }
 
 /*  always writes a terminating null character if any chars are written
  *  returns the number of chars that dst would contain, not including
  *  the terminating null character, if dst_len was large enough
  */
-size_t util_strncat(char *dst, const char *src, size_t dst_str_len, size_t dst_len)
+size_t util_strncat(char *dst, const char *src, size_t dst_str_len,
+					size_t dst_len)
 {
-    size_t i = dst_str_len;
-    size_t j = 0;
+	size_t i = dst_str_len;
+	size_t j = 0;
 
-    if (dst_len == 0)
-    {
-        return 0;
-    }
-    while (src[j] != '\0')
-    {
-        if (i < (dst_len - 1))
-        {
-            dst[i] = src[j];
-            i++;
-        }
-        j++;
-    }
-    if (i < dst_len)
-    {
-        dst[i] = '\0';
-    }
-    else
-    {
-        dst[dst_len - 1] = '\0';
-    }
-    return dst_str_len + j;
+	if (dst_len == 0) {
+		return 0;
+	}
+
+	while (src[j] != '\0') {
+		if (i < (dst_len - 1)) {
+			dst[i] = src[j];
+			i++;
+		}
+		j++;
+	}
+
+	if (i < dst_len) {
+		dst[i] = '\0';
+	} else {
+		dst[dst_len - 1] = '\0';
+	}
+
+	return dst_str_len + j;
 }
 
 /*  returns: {>=0, file size in bytes
  *           {UTIL_FILE_ERROR, file not readable
  */
-static inline long util_file_len(FILE *file)
+static inline long util_file_len(FILE * file)
 {
-    long file_len = 0;
+	long file_len = 0;
 
-    if ((fseek(file, 0, SEEK_END) == 0)
-     && ((file_len = ftell(file)) >= 0)
-     && (fseek(file, 0, SEEK_SET) == 0))
-    {
-        return file_len;
-    }
-    return UTIL_FILE_ERROR;
+	if ((fseek(file, 0, SEEK_END) == 0)
+		&& ((file_len = ftell(file)) >= 0)
+		&& (fseek(file, 0, SEEK_SET) == 0)) {
+		return file_len;
+	}
+
+	return UTIL_FILE_ERROR;
 }
 
 /*  returns: {>=0, num bytes read
@@ -116,36 +113,36 @@ static inline long util_file_len(FILE *file)
  */
 long util_load_txt_file(const char *file_name, char **buf)
 {
-    long file_len = 0;
-    long num = 0;
-    FILE *file = NULL;
+	long file_len = 0;
+	long num = 0;
+	FILE *file = NULL;
 
-    *buf = NULL;
+	*buf = NULL;
 
-    file = fopen(file_name, "r");
-    if (file == NULL)
-    {
-        return UTIL_FILE_ERROR;
-    }
-    file_len = util_file_len(file);
-    if (file_len == -1)
-    {
-        fclose(file);
-        return UTIL_FILE_ERROR;
-    }
-    *buf = (char *)calloc(file_len + 1, 1);
-    if (*buf == NULL)
-    {
-        fclose(file);
-        return UTIL_NOMEM_ERROR;
-    }
-    num = fread(*buf, 1, file_len, file);
-    fclose(file);
-    if (num != file_len)
-    {
-        free(*buf);
-        *buf = NULL;
-        return UTIL_FILE_ERROR;
-    }
-    return num;
+	file = fopen(file_name, "r");
+	if (file == NULL) {
+		return UTIL_FILE_ERROR;
+	}
+
+	file_len = util_file_len(file);
+	if (file_len == -1) {
+		fclose(file);
+		return UTIL_FILE_ERROR;
+	}
+
+	*buf = (char *)calloc(file_len + 1, 1);
+	if (*buf == NULL) {
+		fclose(file);
+		return UTIL_NOMEM_ERROR;
+	}
+
+	num = fread(*buf, 1, file_len, file);
+	fclose(file);
+	if (num != file_len) {
+		free(*buf);
+		*buf = NULL;
+		return UTIL_FILE_ERROR;
+	}
+	
+	return num;
 }

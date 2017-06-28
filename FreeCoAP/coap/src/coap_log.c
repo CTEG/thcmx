@@ -36,93 +36,88 @@
 
 #include "coap_log.h"
 
-static coap_log_level_t coap_log_level = COAP_LOG_DEF_LEVEL;                    /**< Log level used to filter log messages */
+static coap_log_level_t coap_log_level = COAP_LOG_DEF_LEVEL;					/**< Log level used to filter log messages */
 
 void coap_log_set_level(coap_log_level_t level)
 {
-    switch (level) {
-    case COAP_LOG_WARN:                                                         /**< Warning log level */
-    case COAP_LOG_NOTICE:                                                       /**< Notice warning level */
-    case COAP_LOG_INFO:                                                         /**< Informational warning level */
-    case COAP_LOG_DEBUG:                                                        /**< Debug warning level */
-        coap_log_level = level;
-        break;
-    default:
-        coap_log_level = COAP_LOG_DEF_LEVEL;
-    }
+	switch (level) {
+	case COAP_LOG_WARN:														/**< Warning log level */
+	case COAP_LOG_NOTICE:														/**< Notice warning level */
+	case COAP_LOG_INFO:														/**< Informational warning level */
+	case COAP_LOG_DEBUG:														/**< Debug warning level */
+		coap_log_level = level;
+		break;
+	default:
+		coap_log_level = COAP_LOG_DEF_LEVEL;
+	}
 }
 
 coap_log_level_t coap_log_get_level(void)
 {
-    return coap_log_level;
+	return coap_log_level;
 }
 
 void coap_log_error(const char *msg, ...)
 {
-    va_list arg_list;
+	va_list arg_list;
 
-    va_start(arg_list, msg);
-    if (COAP_LOG_ERROR <= coap_log_level)
-    {
-        printf("Error  : ");
-        vprintf(msg, arg_list);
-        printf("\n");
-    }
-    va_end(arg_list);
+	va_start(arg_list, msg);
+	if (COAP_LOG_ERROR <= coap_log_level) {
+		printf("Error  : ");
+		vprintf(msg, arg_list);
+		printf("\n");
+	}
+	va_end(arg_list);
 }
 
 void coap_log_warn(const char *msg, ...)
 {
-    va_list arg_list;
+	va_list arg_list;
 
-    va_start(arg_list, msg);
-    if (COAP_LOG_WARN <= coap_log_level)
-    {
-        printf("Warning: ");
-        vprintf(msg, arg_list);
-        printf("\n");
-    }
-    va_end(arg_list);
+	va_start(arg_list, msg);
+	if (COAP_LOG_WARN <= coap_log_level) {
+		printf("Warning: ");
+		vprintf(msg, arg_list);
+		printf("\n");
+	}
+	va_end(arg_list);
 }
 
 void coap_log_notice(const char *msg, ...)
 {
-    va_list arg_list;
+	va_list arg_list;
 
-    va_start(arg_list, msg);
-    if (COAP_LOG_NOTICE <= coap_log_level)
-    {
-        printf("Notice : ");
-        vprintf(msg, arg_list);
-        printf("\n");
-    }
-    va_end(arg_list);
+	va_start(arg_list, msg);
+	if (COAP_LOG_NOTICE <= coap_log_level) {
+		printf("Notice : ");
+		vprintf(msg, arg_list);
+		printf("\n");
+	}
+	va_end(arg_list);
 }
 
 void coap_log_info(const char *msg, ...)
 {
-    va_list arg_list;
+	va_list arg_list;
 
-    va_start(arg_list, msg);
-    if (COAP_LOG_INFO <= coap_log_level)
-    {
-        printf("Info   : ");
-        vprintf(msg, arg_list);
-        printf("\n");
-    }
-    va_end(arg_list);
+	va_start(arg_list, msg);
+	if (COAP_LOG_INFO <= coap_log_level) {
+		printf("Info   : ");
+		vprintf(msg, arg_list);
+		printf("\n");
+	}
+	va_end(arg_list);
 }
 
 void coap_log_debug(const char *msg, ...)
 {
-    va_list arg_list;
+	va_list arg_list;
 
-    va_start(arg_list, msg);
-    if (COAP_LOG_DEBUG <= coap_log_level)
-    {
-        printf("Debug  : ");
-        vprintf(msg, arg_list);
-        printf("\n");
-    }
-    va_end(arg_list);
+	va_start(arg_list, msg);
+	if (COAP_LOG_DEBUG <= coap_log_level) {
+		printf("Debug  : ");
+		vprintf(msg, arg_list);
+		printf("\n");
+	}
+	va_end(arg_list);
 }

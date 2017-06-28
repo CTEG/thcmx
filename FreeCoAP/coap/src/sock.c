@@ -32,56 +32,57 @@
  */
 
 #include <stdlib.h>
+
 #include "sock.h"
 
 static const char *sock_error_str[] = {
-    /*   0 */    "ok",
-    /*  -1 */    "received interrupt",
-    /*  -2 */    "timeout",
-    /*  -3 */    "no memory",
-    /*  -4 */    "invalid socket type",
-    /*  -5 */    "invalid argument",
+	/*   0 */ "ok",
+	/*  -1 */ "received interrupt",
+	/*  -2 */ "timeout",
+	/*  -3 */ "no memory",
+	/*  -4 */ "invalid socket type",
+	/*  -5 */ "invalid argument",
 
-    /*  -6 */    "unable to open socket",
-    /*  -7 */    "unable to configure socket",
-    /*  -8 */    "unable to resolve address",
-    /*  -9 */    "unable to bind to address",
-    /* -10 */    "unable to listen on socket",
-    /* -11 */    "unable to accept connection",
-    /* -12 */    "unable to connect to server",
-    /* -13 */    "unable to read from socket",
-    /* -14 */    "unable to write to socket",
+	/*  -6 */ "unable to open socket",
+	/*  -7 */ "unable to configure socket",
+	/*  -8 */ "unable to resolve address",
+	/*  -9 */ "unable to bind to address",
+	/* -10 */ "unable to listen on socket",
+	/* -11 */ "unable to accept connection",
+	/* -12 */ "unable to connect to server",
+	/* -13 */ "unable to read from socket",
+	/* -14 */ "unable to write to socket",
 
-    /* -15 */    "unable to initialise SSL",
-    /* -16 */    "unable to load SSL trust file",
-    /* -17 */    "unable to load SSL certificate file",
-    /* -18 */    "unable to load SSL key file",
-    /* -19 */    "unable to configure socket for SSL",
-    /* -20 */    "unable to complete SSL handshake",
-    /* -21 */    "SSL cache error",
+	/* -15 */ "unable to initialise SSL",
+	/* -16 */ "unable to load SSL trust file",
+	/* -17 */ "unable to load SSL certificate file",
+	/* -18 */ "unable to load SSL key file",
+	/* -19 */ "unable to configure socket for SSL",
+	/* -20 */ "unable to complete SSL handshake",
+	/* -21 */ "SSL cache error",
 
-    /* -22 */    "unable to initialise TLS",
-    /* -23 */    "unable to load TLS trust file",
-    /* -24 */    "unable to load TLS credentials",
-    /* -25 */    "unable to configure socket for TLS",
-    /* -26 */    "unable to complete TLS handshake",
-    /* -27 */    "TLS rehandshake refused",
-    /* -28 */    "TLS warning alert received",
-    /* -29 */    "TLS cache error",
+	/* -22 */ "unable to initialise TLS",
+	/* -23 */ "unable to load TLS trust file",
+	/* -24 */ "unable to load TLS credentials",
+	/* -25 */ "unable to configure socket for TLS",
+	/* -26 */ "unable to complete TLS handshake",
+	/* -27 */ "TLS rehandshake refused",
+	/* -28 */ "TLS warning alert received",
+	/* -29 */ "TLS cache error",
 
-    /* -30 */    "peer certificate verification failed",
-    /* -31 */    "unable to close socket",
+	/* -30 */ "peer certificate verification failed",
+	/* -31 */ "unable to close socket",
 
-    /* -32 */    "lock error"
+	/* -32 */ "lock error"
 };
 
 const char *sock_strerror(int error)
 {
-    int i = -error;
+	int i = -error;
 
-    if ((i < 0) || (i >= SOCK_NUM_ERRORS))
-    {
-        return NULL;
-    }
-    return sock_error_str[i];
+	if ((i < 0) || (i >= SOCK_NUM_ERRORS)) {
+		return NULL;
+	}
+	
+	return sock_error_str[i];
 }
