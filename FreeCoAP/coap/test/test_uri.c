@@ -1624,17 +1624,12 @@ test_uri_data_t test49_data =
  */
 static void test_field(test_result_t *result, const char *field, const char *exp)
 {
-    if (exp != NULL)
-    {
-        if ((field == NULL) || (strcmp(field, exp) != 0))
-        {
+    if (exp != NULL) {
+        if ((field == NULL) || (strcmp(field, exp) != 0)) {
             *result = FAIL;
         }
-    }
-    else  /* (exp == NULL) */
-    {
-        if (field != NULL)
-        {
+    } else { /* (exp == NULL) */
+        if (field != NULL) {
             *result = FAIL;
         }
     }
@@ -1712,8 +1707,7 @@ test_result_t test_parse_func(test_data_t data)
 
     uri_create(&uri);
     ret = uri_parse(&uri, test_data->uri);
-    if (ret != test_data->ret_parse)
-    {
+    if (ret != test_data->ret_parse) {
         result = FAIL;
     }
     print_uri(&uri);
@@ -1748,8 +1742,10 @@ test_result_t test_set_gen_func(test_data_t data)
     num = uri_generate(&uri, buf, sizeof(buf));
     if (num != test_data->ret_generate)
         result = FAIL;
+
     if (strcmp(buf, test_data->uri) != 0)
         result = FAIL;
+
     DEBUG_PRINT("buf: '%s'\n", buf);
 
     uri_destroy(&uri);
@@ -1779,13 +1775,12 @@ test_result_t test_copy_func(test_data_t data)
     uri_create(&uri_src);
     uri_create(&uri_dest);
     ret = uri_parse(&uri_src, test_data->uri);
-    if (ret != test_data->ret_parse)
-    {
+    if (ret != test_data->ret_parse) {
         result = FAIL;
     }
+
     ret = uri_copy(&uri_dest, &uri_src);
-    if (ret != test_data->ret_copy)
-    {
+    if (ret != test_data->ret_copy) {
         result = FAIL;
     }
     print_uri(&uri_dest);

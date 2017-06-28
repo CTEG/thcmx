@@ -42,16 +42,13 @@
 
 #define DIM(x) (sizeof(x) / sizeof(x[0]))
 
-typedef struct
-{
+typedef struct {
     const char section_name[BUF_LEN + 1];
     const char entry_name[BUF_LEN + 1];
     const char entry_value[BUF_LEN + 1];
-}
-entry_t;
+} entry_t;
 
-typedef struct
-{
+typedef struct {
     const char *desc;
     const char *str;
     entry_t *set_entries;
@@ -61,8 +58,7 @@ typedef struct
     unsigned parse_ret;
     unsigned parse_line;
     unsigned parse_col;
-}
-test_config_data_t;
+} test_config_data_t;
 
 entry_t test1_entries[] =
 {
@@ -550,7 +546,8 @@ test_result_t test_set_get_func(test_data_t data)
             result = FAIL;
         }
 
-        DEBUG_PRINT("set: section: '%s', name: '%s', value: '%s'\n", section_name, entry_name, entry_value);
+        DEBUG_PRINT("set: section: '%s', name: '%s', value: '%s'\n",
+                    section_name, entry_name, entry_value);
     }
     DEBUG_PRINT("\n");
     for (i = 0; i < test_data->num_get_entries; i++)
@@ -565,7 +562,8 @@ test_result_t test_set_get_func(test_data_t data)
             result = FAIL;
         }
 
-        DEBUG_PRINT("get: section: '%s', name: '%s', value: '%s'\n", section_name, entry_name, entry_value);
+        DEBUG_PRINT("get: section: '%s', name: '%s', value: '%s'\n",
+                    section_name, entry_name, entry_value);
     }
 
     config_destroy(&config);
@@ -594,9 +592,11 @@ test_result_t test_parse_func(test_data_t data)
     config_create(&config);
 
     ret = config_parse(&config, test_data->str, &line, &col);
-    if ((ret != test_data->parse_ret) || (line != test_data->parse_line) || (col != test_data->parse_col))
+    if ((ret != test_data->parse_ret) || (line != test_data->parse_line)
+        || (col != test_data->parse_col))
     {
-        DEBUG_PRINT("Error: config_parse returned: %d, '%s', line: %d, col: %d\n", ret, config_strerr(ret), line, col);
+        DEBUG_PRINT("Error: config_parse returned: %d, '%s', line: %d, col: %d\n",
+                        ret, config_strerr(ret), line, col);
         result = FAIL;
     }
 
@@ -612,7 +612,8 @@ test_result_t test_parse_func(test_data_t data)
             result = FAIL;
         }
 
-        DEBUG_PRINT("get: section: '%s', name: '%s', value: '%s'\n", section_name, entry_name, entry_value);
+        DEBUG_PRINT("get: section: '%s', name: '%s', value: '%s'\n",
+                        section_name, entry_name, entry_value);
     }
 
     config_destroy(&config);
@@ -636,11 +637,13 @@ test_result_t test_parse_invalid(test_data_t data)
     config_create(&config);
 
     ret = config_parse(&config, test_data->str, &line, &col);
-    if ((ret != test_data->parse_ret) || (line != test_data->parse_line) || (col != test_data->parse_col))
+    if ((ret != test_data->parse_ret) || (line != test_data->parse_line)
+            || (col != test_data->parse_col))
     {
         result = FAIL;
     }
-    DEBUG_PRINT("config_parse returned: %d, '%s', line: %d, col: %d\n", ret, config_strerr(ret), line, col);
+    DEBUG_PRINT("config_parse returned: %d, '%s', line: %d, col: %d\n",
+                    ret, config_strerr(ret), line, col);
 
     config_destroy(&config);
 

@@ -36,9 +36,12 @@
 
 #include "test.h"
 
-#define START_STR   "\n----------------------------------------\n"              /**< String printed at the start of a test */
-#define PASS_STR    "-----------------<pass>-----------------\n"                /**< String printed at the end of a test that passed */
-#define FAIL_STR    "*****************[FAIL]*****************\n"                /**< String printed at the end of a test that failed */
+/**< String printed at the start of a test */
+#define START_STR   "\n----------------------------------------\n"
+/**< String printed at the end of a test that passed */
+#define PASS_STR    "-----------------<pass>-----------------\n"
+/**< String printed at the end of a test that failed */
+#define FAIL_STR    "*****************[FAIL]*****************\n"
 
 unsigned test_run(test_t *test, unsigned num_tests)
 {
@@ -59,7 +62,8 @@ unsigned test_run(test_t *test, unsigned num_tests)
     }
 
     if (num_passed < num_tests) {
-        printf("\n[Total: %u, Pass: %u, Fail: %u]\n\n", num_tests, num_passed, num_tests - num_passed);
+        printf("\n[Total: %u, Pass: %u, Fail: %u]\n\n",
+            num_tests, num_passed, num_tests - num_passed);
     } else {
         printf("\n[Total: %u, Pass: %u]\n\n", num_tests, num_passed);
     }

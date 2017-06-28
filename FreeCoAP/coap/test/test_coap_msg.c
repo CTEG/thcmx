@@ -93,8 +93,7 @@ typedef struct
     unsigned num_ops;                                                           /**< Size of the array of message option test data structures */
     char *payload;                                                              /**< Buffer containing a payload */
     size_t payload_len;                                                         /**< Length of the buffer containing a payload */
-}
-test_coap_msg_data_t;
+} test_coap_msg_data_t;
 
 #define TEST1_BUF_LEN      (4 + 8 + 5 + 9 + 1 + 16)
 #define TEST1_TOKEN_LEN    8
@@ -4527,6 +4526,7 @@ static test_result_t test_format_block_op_func(test_data_t data)
             }
         }
     }
+
     return result;
 }
 

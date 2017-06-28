@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <getopt.h>
 #ifdef COAP_DTLS_EN
 #include <gnutls/gnutls.h>
 #endif
@@ -43,20 +44,21 @@
 #include "coap_log.h"
 
 #ifdef COAP_IP6
-#define HOST                 "::"                                               /**< Host address to listen on */
+#define HOST                 "::"                      /**< Host address to listen on */
 #else
-#define HOST                 "0.0.0.0"                                          /**< Host address to listen on */
+#define HOST                 "0.0.0.0"                 /**< Host address to listen on */
 #endif
-#define PORT                 "12436"                                            /**< UDP port number to listen on */
-#define KEY_FILE_NAME        "../../certs/server_privkey.pem"                   /**< DTLS key file name */
-#define CERT_FILE_NAME       "../../certs/server_cert.pem"                      /**< DTLS certificate file name */
-#define TRUST_FILE_NAME      "../../certs/root_client_cert.pem"                 /**< DTLS trust file name */
-#define CRL_FILE_NAME        ""                                                 /**< DTLS certificate revocation list file name */
-#define SEP_URI_PATH         "/separate"                                        /**< URI path that requires a separate response */
-#define UNSAFE_URI_PATH      "unsafe"                                           /**< URI path that causes the server to include an unsafe option in the response */
-#define BLOCKWISE_URI_PATH   "block"                                            /**< URI path that causes the server to use blockwise transfers */
-#define BLOCKWISE_BUF_LEN    40                                                 /**< Total length (in bytes) of the buffer used for blockwise transfers */
-#define BLOCK_SIZE           16                                                 /**< Size of an individual block in a blockwise transfer */
+
+#define PORT                 "12436"                   /**< UDP port number to listen on */
+#define KEY_FILE_NAME        "server_privkey.pem"      /**< DTLS key file name */
+#define CERT_FILE_NAME       "server_cert.pem"         /**< DTLS certificate file name */
+#define TRUST_FILE_NAME      "root_client_cert.pem"    /**< DTLS trust file name */
+#define CRL_FILE_NAME        ""                        /**< DTLS certificate revocation list file name */
+#define SEP_URI_PATH         "/separate"               /**< URI path that requires a separate response */
+#define UNSAFE_URI_PATH      "unsafe"                  /**< URI path that causes the server to include an unsafe option in the response */
+#define BLOCKWISE_URI_PATH   "block"                   /**< URI path that causes the server to use blockwise transfers */
+#define BLOCKWISE_BUF_LEN    40                        /**< Total length (in bytes) of the buffer used for blockwise transfers */
+#define BLOCK_SIZE           16                        /**< Size of an individual block in a blockwise transfer */
 
 /**
  *  @brief Print a CoAP message
@@ -77,10 +79,10 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     char *val = NULL;
 
     log_level = coap_log_get_level();
-    if (log_level < COAP_LOG_INFO)
-    {
+    if (log_level < COAP_LOG_INFO) {
         return;
     }
+
     printf("%s\n", str);
     printf("ver:         0x%02x\n", coap_msg_get_ver(msg));
     printf("type:        0x%02x\n", coap_msg_get_type(msg));
@@ -89,38 +91,39 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     printf("code_detail: %d\n", coap_msg_get_code_detail(msg));
     printf("msg_id:      0x%04x\n", coap_msg_get_msg_id(msg));
     printf("token:      ");
+
     token = coap_msg_get_token(msg);
-    for (i = 0; i < coap_msg_get_token_len(msg); i++)
-    {
+    for (i = 0; i < coap_msg_get_token_len(msg); i++) {
         printf(" 0x%02x", (unsigned char)token[i]);
     }
     printf("\n");
+
     op = coap_msg_get_first_op(msg);
-    while (op != NULL)
-    {
+    while (op != NULL) {
         num = coap_msg_op_get_num(op);
         len = coap_msg_op_get_len(op);
         val = coap_msg_op_get_val(op);
         printf("op[%u].num:   %u\n", j, num);
         printf("op[%u].len:   %u\n", j, len);
         printf("op[%u].val:  ", j);
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             printf(" 0x%02x", (unsigned char)val[i]);
         }
         printf("\n");
         op = coap_msg_op_get_next(op);
         j++;
     }
+
     printf("payload:     ");
     payload = coap_msg_get_payload(msg);
-    for (i = 0; i < coap_msg_get_payload_len(msg); i++)
-    {
+    for (i = 0; i < coap_msg_get_payload_len(msg); i++) {
         printf("%c", payload[i]);
     }
     printf("\n");
     printf("payload_len: %zu\n", coap_msg_get_payload_len(msg));
     fflush(stdout);
+
+    return;
 }
 
 /**
@@ -144,20 +147,19 @@ static int server_match_uri_path(coap_msg_t *req, const char *str)
     char *val = NULL;
 
     op = coap_msg_get_first_op(req);
-    while (op != NULL)
-    {
+    while (op != NULL) {
         num = coap_msg_op_get_num(op);
-        if (num == COAP_MSG_URI_PATH)
-        {
+        if (num == COAP_MSG_URI_PATH) {
             len = coap_msg_op_get_len(op);
             val = coap_msg_op_get_val(op);
-            if ((len == strlen(str)) && (strncmp(val, str, len) == 0))
-            {
+            if ((len == strlen(str)) && (strncmp(val, str, len) == 0)) {
                 return 1;  /* match */
             }
         }
+
         op = coap_msg_op_get_next(op);
     }
+
     return 0;  /* no match */
 }
 
@@ -183,18 +185,18 @@ static int server_parse_block_op(unsigned *num, unsigned *more, unsigned *size, 
     char *op_val = NULL;
 
     op = coap_msg_get_first_op(msg);
-    while (op != NULL)
-    {
+    while (op != NULL) {
         op_num = coap_msg_op_get_num(op);
         op_len = coap_msg_op_get_len(op);
         op_val = coap_msg_op_get_val(op);
         if (((op_num == COAP_MSG_BLOCK1) && (type == COAP_MSG_BLOCK1))
-         || ((op_num == COAP_MSG_BLOCK2) && (type == COAP_MSG_BLOCK2)))
-        {
+         || ((op_num == COAP_MSG_BLOCK2) && (type == COAP_MSG_BLOCK2))) {
             return coap_msg_op_parse_block_val(num, more, size, op_val, op_len);
         }
+
         op = coap_msg_op_get_next(op);
     }
+
     return 1;  /* not found */
 }
 
@@ -244,6 +246,7 @@ static int server_handle_unsafe(coap_server_t *server, coap_msg_t *req, coap_msg
         coap_log_error("Failed to add payload to response message");
         return coap_msg_set_code(resp, COAP_MSG_SERVER_ERR, COAP_MSG_INT_SERVER_ERR);
     }
+
     return coap_msg_set_code(resp, COAP_MSG_SUCCESS, COAP_MSG_CONTENT);
 }
 
@@ -478,56 +481,88 @@ static int server_handle(coap_server_t *server, coap_msg_t *req, coap_msg_t *res
  *  @retval EXIT_SUCCESS Success
  *  @retval EXIT_FAILURE Error
  */
-int main()
+int main(int argc, char **argv)
 {
     coap_server_t server = {0};
 #ifdef COAP_DTLS_EN
     const char *gnutls_ver = NULL;
 #endif
+    const char *opts = ":hp:";
     int ret = 0;
+    int c = 0;
+    char path[100] = {0};
+
+    while ((c = getopt(argc, argv, opts)) != -1) {
+        switch (c) {
+        case 'h':
+            // usage();
+            return EXIT_SUCCESS;
+
+        case 'p':
+            strncpy(path, optarg, strlen(optarg));
+            break;
+
+        default:
+            // usage();
+            break;
+        }
+    }
 
     coap_log_set_level(COAP_LOG_DEBUG);
 
 #ifdef COAP_DTLS_EN
     gnutls_ver = gnutls_check_version(NULL);
-    if (gnutls_ver == NULL)
-    {
+    if (gnutls_ver == NULL) {
         coap_log_error("Unable to determine GnuTLS version");
         return EXIT_FAILURE;
     }
     coap_log_info("GnuTLS version: %s", gnutls_ver);
 
-    ret = coap_server_create(&server, server_handle, HOST, PORT, KEY_FILE_NAME, CERT_FILE_NAME, TRUST_FILE_NAME, CRL_FILE_NAME);
+    char keyfile[256] = {0};
+    char certfile[256] = {0};
+    char trustfile[256] = {0};
+
+    snprintf(keyfile, sizeof(keyfile), "%s/%s", path, KEY_FILE_NAME);
+    snprintf(certfile, sizeof(certfile), "%s/%s", path, CERT_FILE_NAME);
+    snprintf(trustfile, sizeof(trustfile), "%s/%s", path, TRUST_FILE_NAME);
+
+    // coap_log_info("\nkey(%s)\ncert(%s)\ntrust(%s)\n", keyfile, certfile, trustfile);
+
+    ret = coap_server_create(&server, server_handle, HOST, PORT, keyfile, certfile, trustfile, CRL_FILE_NAME);
 #else
     ret = coap_server_create(&server, server_handle, HOST, PORT);
 #endif
-    if (ret < 0)
-    {
-        if (ret != -1)
-        {
+    if (ret < 0) {
+        if (ret != -1) {
             /* a return value of -1 indicates a DTLS failure which has already been logged */
             coap_log_error("%s", strerror(-ret));
         }
+
         return EXIT_FAILURE;
     }
+
     ret = coap_server_add_sep_resp_uri_path(&server, SEP_URI_PATH);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("%s", strerror(-ret));
         coap_server_destroy(&server);
+
         return EXIT_FAILURE;
     }
+
     ret = coap_server_run(&server);
-    if (ret < 0)
-    {
-        if (ret != -1)
-        {
+    if (ret < 0) {
+        if (ret != -1) {
             /* a return value of -1 indicates a DTLS failure which has already been logged */
             coap_log_error("%s", strerror(-ret));
         }
+
         coap_server_destroy(&server);
+
         return EXIT_FAILURE;
     }
+
     coap_server_destroy(&server);
+
     return EXIT_SUCCESS;
 }
+

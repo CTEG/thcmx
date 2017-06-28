@@ -43,9 +43,9 @@
 #include "coap_log.h"
 
 #define REHANDSHAKE
-#define TRUST_FILE_NAME  "../../certs/root_client_cert.pem"
-#define CERT_FILE_NAME   "../../certs/server_cert.pem"
-#define KEY_FILE_NAME    "../../certs/server_privkey.pem"
+#define TRUST_FILE_NAME  "./certs/root_client_cert.pem"
+#define CERT_FILE_NAME   "./certs/server_cert.pem"
+#define KEY_FILE_NAME    "./certs/server_privkey.pem"
 #define PORT             "9999"
 #define BUF_SIZE         (1 << 4)
 #define TIMEOUT          30
@@ -188,5 +188,6 @@ int main(void)
 
     tls_server_destroy(&server);
     tls_deinit();
+    
     return EXIT_SUCCESS;
 }

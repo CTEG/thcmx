@@ -39,11 +39,9 @@
 
 #define DIM(x) (sizeof(x) / sizeof(x[0]))
 
-typedef struct
-{
+typedef struct {
     const char *desc;
-}
-test_lock_data1_t;
+} test_lock_data1_t;
 
 test_lock_data1_t test1_data =
 {
@@ -60,32 +58,25 @@ test_result_t test1_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = lock_create(&lock);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         result = FAIL;
-    }
-    else
-    {
+    } else {
         ret = lock_get(&lock);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             result = FAIL;
-        }
-        else
-        {
+        } else {
             ret = lock_put(&lock);
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 result = FAIL;
             }
         }
         lock_destroy(&lock);
     }
+
     return result;
 }
 
-typedef struct
-{
+typedef struct {
     const char *desc;
 } test_lock_data2_t;
 
@@ -104,35 +95,27 @@ test_result_t test2_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = lock_create(&lock);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         result = FAIL;
-    }
-    else
-    {
+    } else {
         ret = lock_get(&lock);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             result = FAIL;
-        }
-        else
-        {
+        } else {
             ret = lock_get(&lock);
-            if (ret != -1)
-            {
+            if (ret != -1) {
                 result = FAIL;
             }
         }
         lock_destroy(&lock);
     }
+
     return result;
 }
 
-typedef struct
-{
+typedef struct {
     const char *desc;
-}
-test_lock_data3_t;
+} test_lock_data3_t;
 
 test_lock_data3_t test3_data =
 {
@@ -149,43 +132,32 @@ test_result_t test3_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = lock_create(&lock);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         result = FAIL;
-    }
-    else
-    {
+    } else {
         ret = lock_get(&lock);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             result = FAIL;
-        }
-        else
-        {
+        } else {
             ret = lock_put(&lock);
-            if (ret != 0)
-            {
+            if (ret != 0) {
                 result = FAIL;
-            }
-            else
-            {
+            } else {
                 ret = lock_put(&lock);
-                if (ret != -1)
-                {
+                if (ret != -1) {
                     result = FAIL;
                 }
             }
         }
         lock_destroy(&lock);
     }
+
     return result;
 }
 
-typedef struct
-{
+typedef struct {
     const char *desc;
-}
-test_lock_data4_t;
+} test_lock_data4_t;
 
 test_lock_data4_t test4_data =
 {
@@ -202,19 +174,16 @@ test_result_t test4_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = lock_create(&lock);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         result = FAIL;
-    }
-    else
-    {
+    } else {
         ret = lock_put(&lock);
-        if (ret != -1)
-        {
+        if (ret != -1) {
             result = FAIL;
         }
         lock_destroy(&lock);
     }
+    
     return result;
 }
 

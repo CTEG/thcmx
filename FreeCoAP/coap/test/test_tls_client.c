@@ -42,9 +42,9 @@
 #include "coap_log.h"
 
 #define SERVER_COMMON_NAME  "dummy/server"
-#define TRUST_FILE_NAME     "../../certs/root_server_cert.pem"
-#define CERT_FILE_NAME      "../../certs/client_cert.pem"
-#define KEY_FILE_NAME       "../../certs/client_privkey.pem"
+#define TRUST_FILE_NAME     "./certs/root_server_cert.pem"
+#define CERT_FILE_NAME      "./certs/client_cert.pem"
+#define KEY_FILE_NAME       "./certs/client_privkey.pem"
 #ifdef SOCK_IP6
 #define HOST                "::1"
 #else
@@ -76,8 +76,7 @@ static int client_run(tls_client_t *client)
     int i = 0;
 
     ret = tls_sock_open(&s, client, HOST, PORT, SERVER_COMMON_NAME, TIMEOUT);
-    if (ret != SOCK_OK)
-    {
+    if (ret != SOCK_OK) {
         return ret;
     }
 
@@ -88,28 +87,26 @@ static int client_run(tls_client_t *client)
     else
         coap_log_debug("Session not resumed");
 
-    for (i = 0; i < BUF_SIZE; i++)
-    {
+    for (i = 0; i < BUF_SIZE; i++) {
         out_buf[i] = i;
     }
 
     ret = tls_sock_write_full(&s, out_buf, BUF_SIZE);
-    if (ret <= 0)
-    {
+    if (ret <= 0) {
         tls_sock_close(&s);
         return ret;
     }
     coap_log_debug("Sent %d bytes", ret);
 
     ret = tls_sock_read_full(&s, in_buf, BUF_SIZE);
-    if (ret <= 0)
-    {
+    if (ret <= 0) {
         tls_sock_close(&s);
         return ret;
     }
     coap_log_debug("Received %d bytes", ret);
 
     tls_sock_close(&s);
+
     return SOCK_OK;
 }
 
@@ -128,40 +125,36 @@ int main(void)
     coap_log_set_level(COAP_LOG_DEBUG);
 
     gnutls_ver = gnutls_check_version(NULL);
-    if (gnutls_ver == NULL)
-    {
+    if (gnutls_ver == NULL) {
         coap_log_error("Unable to determine GnuTLS version");
         return EXIT_FAILURE;
     }
     coap_log_info("GnuTLS version: %s", gnutls_ver);
 
     ret = tls_init();
-    if (ret != SOCK_OK)
-    {
+    if (ret != SOCK_OK) {
         coap_log_error("%s", sock_strerror(ret));
         return EXIT_FAILURE;
     }
 
     ret = tls_client_create(&client, TRUST_FILE_NAME, CERT_FILE_NAME, KEY_FILE_NAME);
-    if (ret != SOCK_OK)
-    {
+    if (ret != SOCK_OK) {
         coap_log_error("%s", sock_strerror(ret));
         tls_deinit();
         return EXIT_FAILURE;
     }
 
-    for (i = 0; i < NUM_ITER; i++)
-    {
+    for (i = 0; i < NUM_ITER; i++) {
         start = time(NULL);
         ret = client_run(&client);
         end = time(NULL);
-        if (ret != SOCK_OK)
-        {
+        if (ret != SOCK_OK) {
             coap_log_error("%s", sock_strerror(ret));
             tls_client_destroy(&client);
             tls_deinit();
             return EXIT_FAILURE;
         }
+
         coap_log_info("Result: %s", sock_strerror(ret));
         coap_log_debug("Time: %d sec", (int)(end - start));
         coap_log_debug("Sleeping for %d seconds...", DELAY);
@@ -170,5 +163,6 @@ int main(void)
 
     tls_client_destroy(&client);
     tls_deinit();
+
     return EXIT_SUCCESS;
 }

@@ -45,62 +45,57 @@
 #include "test.h"
 
 #ifdef COAP_IP6
-#define HOST             "::1"                                                  /**< Host address of the server */
+#define HOST             "::1"                               /**< Host address of the server */
 #else
-#define HOST             "127.0.0.1"                                            /**< Host address of the server */
+#define HOST             "127.0.0.1"                         /**< Host address of the server */
 #endif
-#define PORT             "12436"                                                /**< UDP port number of the server */
-#define TRUST_FILE_NAME  "../../certs/root_server_cert.pem"                     /**< DTLS trust file name */
-#define CERT_FILE_NAME   "../../certs/client_cert.pem"                          /**< DTLS certificate file name */
-#define KEY_FILE_NAME    "../../certs/client_privkey.pem"                       /**< DTLS key file name */
-#define CRL_FILE_NAME    ""                                                     /**< DTLS certificate revocation list file name */
-#define COMMON_NAME      "dummy/server"                                         /**< Common name of the server */
-#define SEP_URI_PATH     "separate"                                             /**< URI path option value to trigger a separate response from the server */
+
+#define PORT             "12436"                             /**< UDP port number of the server */
+#define TRUST_FILE_NAME  "./certs/root_server_cert.pem"  /**< DTLS trust file name */
+#define CERT_FILE_NAME   "./certs/client_cert.pem"       /**< DTLS certificate file name */
+#define KEY_FILE_NAME    "./certs/client_privkey.pem"    /**< DTLS key file name */
+#define CRL_FILE_NAME    ""                                  /**< DTLS certificate revocation list file name */
+#define COMMON_NAME      "dummy/server"                      /**< Common name of the server */
+#define SEP_URI_PATH     "separate"   /**< URI path option value to trigger a separate response from the server */
 
 /**
  *  @brief Message option test data structure
  */
-typedef struct
-{
-    unsigned num;                                                               /**< Option number */
-    unsigned len;                                                               /**< Option length */
-    char *val;                                                                  /**< Pointer to a buffer containing the option value */
-}
-test_coap_client_msg_op_t;
+typedef struct {
+    unsigned num;                                   /**< Option number */
+    unsigned len;                                   /**< Option length */
+    char *val;                                      /**< Pointer to a buffer containing the option value */
+} test_coap_client_msg_op_t;
 
 /**
  *  @brief Client test message data structure
  */
-typedef struct
-{
-    coap_msg_type_t type;                                                       /**< Message type */
-    unsigned code_class;                                                        /**< Message code class */
-    unsigned code_detail;                                                       /**< Message code detail */
-    test_coap_client_msg_op_t *ops;                                             /**< Array of message option test data structures */
-    unsigned num_ops;                                                           /**< Size of the array of message option test data structures */
-    char *payload;                                                              /**< Buffer containing the payload */
-    size_t payload_len;                                                         /**< Length of the buffer containing the payload */
-}
-test_coap_client_msg_t;
+typedef struct {
+    coap_msg_type_t type;                        /**< Message type */
+    unsigned code_class;                         /**< Message code class */
+    unsigned code_detail;                        /**< Message code detail */
+    test_coap_client_msg_op_t *ops;              /**< Array of message option test data structures */
+    unsigned num_ops;                            /**< Size of the array of message option test data structures */
+    char *payload;                               /**< Buffer containing the payload */
+    size_t payload_len;                          /**< Length of the buffer containing the payload */
+} test_coap_client_msg_t;
 
 /**
  *  @brief Client test data structure
  */
-typedef struct
-{
-    const char *desc;                                                           /**< Test description */
-    const char *host;                                                           /**< Server host address */
-    const char *port;                                                           /**< Server UDP port */
-    const char *key_file_name;                                                  /**< DTLS key file name */
-    const char *cert_file_name;                                                 /**< DTLS certificate file name */
-    const char *trust_file_name;                                                /**< DTLS trust file name */
-    const char *crl_file_name;                                                  /**< DTLS certificate revocation list file name */
-    const char *common_name;                                                    /**< Common name of the server */
-    test_coap_client_msg_t *test_req;                                           /**< Array of test request message structures */
-    test_coap_client_msg_t *test_resp;                                          /**< Array of test response message structures */
-    size_t num_msg;                                                             /**< Length of the arrays of test message structures */
-}
-test_coap_client_data_t;
+typedef struct {
+    const char *desc;                            /**< Test description */
+    const char *host;                            /**< Server host address */
+    const char *port;                            /**< Server UDP port */
+    const char *key_file_name;                   /**< DTLS key file name */
+    const char *cert_file_name;                  /**< DTLS certificate file name */
+    const char *trust_file_name;                 /**< DTLS trust file name */
+    const char *crl_file_name;                   /**< DTLS certificate revocation list file name */
+    const char *common_name;                     /**< Common name of the server */
+    test_coap_client_msg_t *test_req;            /**< Array of test request message structures */
+    test_coap_client_msg_t *test_resp;           /**< Array of test response message structures */
+    size_t num_msg;                              /**< Length of the arrays of test message structures */
+} test_coap_client_data_t;
 
 #define TEST1_NUM_MSG      1
 #define TEST1_REQ_OP1_LEN  8
@@ -969,7 +964,8 @@ static test_result_t populate_req(test_coap_client_msg_t *test_req, coap_msg_t *
  *
  *  @returns Test result
  */
-static test_result_t exchange(coap_client_t *client, test_coap_client_msg_t *test_req, coap_msg_t *req, coap_msg_t *resp)
+static test_result_t exchange(coap_client_t *client, test_coap_client_msg_t *test_req,
+                                coap_msg_t *req, coap_msg_t *resp)
 {
     test_result_t result = PASS;
     int ret = 0;
@@ -1215,29 +1211,31 @@ int main(int argc, char **argv)
                       {test_exchange_func, &test8_data}};
 
     opterr = 0;
-    while ((c = getopt(argc, argv, opts)) != -1)
-    {
-        switch (c)
-        {
+    while ((c = getopt(argc, argv, opts)) != -1) {
+        switch (c) {
         case 'h':
             usage();
             return EXIT_SUCCESS;
+
         case 'l':
             log_level = atoi(optarg);
             break;
+
         case ':':
             coap_log_error("Option '%c' requires an argument", optopt);
             return EXIT_FAILURE;
+
         case '?':
             coap_log_error("Unknown option '%c'", optopt);
             return EXIT_FAILURE;
+
         default:
             usage();
         }
     }
+
     /* if there is an argument after the options then interpret it as a test number */
-    if (optind < argc)
-    {
+    if (optind < argc) {
         test_num = atoi(argv[optind]);
     }
 
@@ -1245,48 +1243,54 @@ int main(int argc, char **argv)
 
 #ifdef COAP_DTLS_EN
     gnutls_ver = gnutls_check_version(NULL);
-    if (gnutls_ver == NULL)
-    {
+    if (gnutls_ver == NULL) {
         coap_log_error("Unable to determine GnuTLS version");
         return EXIT_FAILURE;
     }
     coap_log_info("GnuTLS version: %s", gnutls_ver);
 #endif
 
-    switch (test_num)
-    {
+    switch (test_num) {
     case 1:
         num_tests = 1;
         num_pass = test_run(&tests[0], num_tests);
         break;
+
     case 2:
         num_tests = 1;
         num_pass = test_run(&tests[1], num_tests);
         break;
+
     case 3:
         num_tests = 1;
         num_pass = test_run(&tests[2], num_tests);
         break;
+
     case 4:
         num_tests = 1;
         num_pass = test_run(&tests[3], num_tests);
         break;
+
     case 5:
         num_tests = 1;
         num_pass = test_run(&tests[4], num_tests);
         break;
+
     case 6:
         num_tests = 1;
         num_pass = test_run(&tests[5], num_tests);
         break;
+
     case 7:
         num_tests = 1;
         num_pass = test_run(&tests[6], num_tests);
         break;
+
     case 8:
         num_tests = 1;
         num_pass = test_run(&tests[7], num_tests);
         break;
+
     default:
         num_tests = 8;
         num_pass = test_run(tests, num_tests);
@@ -1294,3 +1298,4 @@ int main(int argc, char **argv)
 
     return num_pass == num_tests ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
