@@ -60,8 +60,7 @@ typedef struct {
 /**
  *  @brief Message test data structure
  */
-typedef struct
-{
+typedef struct {
     const char *parse_desc;                                                     /**< Test description for the parse test */
     const char *format_desc;                                                    /**< Test description for the format test */
     const char *copy_desc;                                                      /**< Test description for the copy test */
@@ -3911,10 +3910,10 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     char *val = NULL;
 
     log_level = coap_log_get_level();
-    if (log_level < COAP_LOG_INFO)
-    {
+    if (log_level < COAP_LOG_INFO) {
         return;
     }
+
     printf("%s\n", str);
     printf("ver:         0x%02x\n", coap_msg_get_ver(msg));
     printf("type:        0x%02x\n", coap_msg_get_type(msg));
@@ -3924,35 +3923,34 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     printf("msg_id:      0x%04x\n", coap_msg_get_msg_id(msg));
     printf("token:      ");
     token = coap_msg_get_token(msg);
-    for (i = 0; i < coap_msg_get_token_len(msg); i++)
-    {
+    for (i = 0; i < coap_msg_get_token_len(msg); i++) {
         printf(" 0x%02x", (unsigned char)token[i]);
     }
     printf("\n");
+
     op = coap_msg_get_first_op(msg);
-    while (op != NULL)
-    {
+    while (op != NULL) {
         num = coap_msg_op_get_num(op);
         len = coap_msg_op_get_len(op);
         val = coap_msg_op_get_val(op);
         printf("op[%u].num:   %u\n", j, num);
         printf("op[%u].len:   %u\n", j, len);
         printf("op[%u].val:  ", j);
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             printf(" 0x%02x", (unsigned char)val[i]);
         }
         printf("\n");
         op = coap_msg_op_get_next(op);
         j++;
     }
+
     printf("payload:     ");
     payload = coap_msg_get_payload(msg);
-    for (i = 0; i < coap_msg_get_payload_len(msg); i++)
-    {
+    for (i = 0; i < coap_msg_get_payload_len(msg); i++) {
         printf("%c", payload[i]);
     }
     printf("\n");
+
     printf("payload_len: %zu\n", coap_msg_get_payload_len(msg));
 }
 
@@ -3968,8 +3966,7 @@ static void print_buf(char *buf, size_t len)
     unsigned i = 0;
 
     printf("buffer:");
-    for (i = 0; i < len; i++)
-    {
+    for (i = 0; i < len; i++) {
         printf(" 0x%02x", (unsigned char)buf[i]);
     }
     printf("\n");
@@ -4080,6 +4077,7 @@ static test_result_t test_parse_func(test_data_t data)
         result = FAIL;
     }
     coap_msg_destroy(&msg);
+    
     return result;
 }
 

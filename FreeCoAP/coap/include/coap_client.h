@@ -34,38 +34,39 @@
 #ifndef COAP_CLIENT_H
 #define COAP_CLIENT_H
 
-#include <time.h>
 #include <netinet/in.h>
+#include <time.h>
+
 #ifdef COAP_DTLS_EN
 #include <gnutls/gnutls.h>
 #include <gnutls/dtls.h>
 #endif
+
 #include "coap_msg.h"
 #include "coap_ipv.h"
 
-#define COAP_CLIENT_HOST_BUF_LEN  128                                           /**< Buffer length for host addresses */
-#define COAP_CLIENT_PORT_BUF_LEN  8                                             /**< Buffer length for port numbers */
+#define COAP_CLIENT_HOST_BUF_LEN  128                  /**< Buffer length for host addresses */
+#define COAP_CLIENT_PORT_BUF_LEN  8                    /**< Buffer length for port numbers */
 
 /**
  *  @brief Client structure
  */
-typedef struct
-{
-    int sd;                                                                     /**< Socket descriptor */
-    int timer_fd;                                                               /**< Timer file descriptor */
-    struct timespec timeout;                                                    /**< Timeout value */
-    unsigned num_retrans;                                                       /**< Current number of retransmissions */
-    coap_ipv_sockaddr_in_t server_sin;                                          /**< Socket structture */
-    socklen_t server_sin_len;                                                   /**< Socket structure length */
-    char server_host[COAP_CLIENT_HOST_BUF_LEN];                                 /**< String to hold the server host address */
-    char server_port[COAP_CLIENT_PORT_BUF_LEN];                                 /**< String to hold the server port number */
+typedef struct {
+    int sd;                                            /**< Socket descriptor */
+    int timer_fd;                                      /**< Timer file descriptor */
+    struct timespec timeout;                           /**< Timeout value */
+    unsigned num_retrans;                              /**< Current number of retransmissions */
+    coap_ipv_sockaddr_in_t server_sin;                 /**< Socket structture */
+    socklen_t server_sin_len;                          /**< Socket structure length */
+    char server_host[COAP_CLIENT_HOST_BUF_LEN];        /**< String to hold the server host address */
+    char server_port[COAP_CLIENT_PORT_BUF_LEN];        /**< String to hold the server port number */
+
 #ifdef COAP_DTLS_EN
-    gnutls_session_t session;                                                   /**< DTLS session */
-    gnutls_certificate_credentials_t cred;                                      /**< DTLS credentials */
-    gnutls_priority_t priority;                                                 /**< DTLS priorities */
+    gnutls_session_t session;                          /**< DTLS session */
+    gnutls_certificate_credentials_t cred;             /**< DTLS credentials */
+    gnutls_priority_t priority;                        /**< DTLS priorities */
 #endif
-}
-coap_client_t;
+} coap_client_t;
 
 #ifdef COAP_DTLS_EN
 

@@ -34,8 +34,9 @@
 #ifndef COAP_MSG_H
 #define COAP_MSG_H
 
-#include <stddef.h>
 #include <sys/types.h>
+#include <stddef.h>
+
 
 #define COAP_MSG_VER                           0x01                             /**< CoAP version */
 #define COAP_MSG_MAX_TOKEN_LEN                 8                                /**< Maximum token length */
@@ -77,58 +78,49 @@
 /**
  *  @brief Message type enumeration
  */
-typedef enum
-{
-    COAP_MSG_CON = 0x0,                                                         /**< Confirmable message */
-    COAP_MSG_NON = 0x1,                                                         /**< Non-confirmable message */
-    COAP_MSG_ACK = 0x2,                                                         /**< Acknowledgement message */
-    COAP_MSG_RST = 0x3                                                          /**< Reset message */
-}
-coap_msg_type_t;
+typedef enum {
+    COAP_MSG_CON = 0x0,                                      /**< Confirmable message */
+    COAP_MSG_NON = 0x1,                                      /**< Non-confirmable message */
+    COAP_MSG_ACK = 0x2,                                      /**< Acknowledgement message */
+    COAP_MSG_RST = 0x3                                       /**< Reset message */
+} coap_msg_type_t;
 
 /**
  *  @brief Code class enumeration
  */
-typedef enum
-{
-    COAP_MSG_REQ = 0,                                                           /**< Request */
-    COAP_MSG_SUCCESS = 2,                                                       /**< Success response */
-    COAP_MSG_CLIENT_ERR = 4,                                                    /**< Client error response */
-    COAP_MSG_SERVER_ERR = 5,                                                    /**< Server error response */
-}
-coap_msg_class_t;
+typedef enum {
+    COAP_MSG_REQ = 0,                                     /**< Request */
+    COAP_MSG_SUCCESS = 2,                                 /**< Success response */
+    COAP_MSG_CLIENT_ERR = 4,                              /**< Client error response */
+    COAP_MSG_SERVER_ERR = 5,                              /**< Server error response */
+} coap_msg_class_t;
 
 /**
  *  @brief Code detail enumeration
  */
-typedef enum
-{
+typedef enum {
     COAP_MSG_GET = 1,                                                           /**< Get request method */
     COAP_MSG_POST = 2,                                                          /**< Post request method */
     COAP_MSG_PUT = 3,                                                           /**< Put request method */
     COAP_MSG_DELETE =4                                                          /**< Delete request method */
-}
-coap_msg_method_t;
+} coap_msg_method_t;
 
 /**
  *  @brief Success response code detail enumeration
  */
-typedef enum
-{
+typedef enum {
     COAP_MSG_CREATED = 1,                                                       /**< Created success response */
     COAP_MSG_DELETED = 2,                                                       /**< Deleted success response */
     COAP_MSG_VALID = 3,                                                         /**< Valid success response */
     COAP_MSG_CHANGED = 4,                                                       /**< Changed success response */
     COAP_MSG_CONTENT = 5,                                                       /**< Content success response */
     COAP_MSG_CONTINUE = 31                                                      /**< Continue success response */
-}
-coap_msg_success_t;
+} coap_msg_success_t;
 
 /**
  *  @brief Client error response code detail enumeration
  */
-typedef enum
-{
+typedef enum {
     COAP_MSG_BAD_REQ = 0,                                                       /**< Bad request client error */
     COAP_MSG_UNAUTHORIZED = 1,                                                  /**< Unauthorized client error */
     COAP_MSG_BAD_OPTION = 2,                                                    /**< Bad option client error */
@@ -140,28 +132,24 @@ typedef enum
     COAP_MSG_PRECOND_FAILED = 12,                                               /**< Precondition failed client error */
     COAP_MSG_REQ_ENT_TOO_LARGE = 13,                                            /**< Request entity too large client error */
     COAP_MSG_UNSUP_CONT_FMT = 15                                                /**< Unsupported content-format client error */
-}
-coap_msg_client_err_t;
+} coap_msg_client_err_t;
 
 /**
  *  @brief Server error response code detail enumeration
  */
-typedef enum
-{
+typedef enum {
     COAP_MSG_INT_SERVER_ERR = 0,                                                /**< Internal server error */
     COAP_MSG_NOT_IMPL = 1,                                                      /**< Not implemented server error */
     COAP_MSG_BAD_GATEWAY = 2,                                                   /**< Bad gateway server error */
     COAP_MSG_SERV_UNAVAIL = 3,                                                  /**< Service unavailable server error */
     COAP_MSG_GATEWAY_TIMEOUT = 4,                                               /**< Gateway timeout server error */
     COAP_MSG_PROXY_NOT_SUP = 5                                                  /**< Proxying not supported server error */
-}
-coap_msg_server_err_t;
+} coap_msg_server_err_t;
 
 /**
  *  @brief Option number enumeration
  */
-typedef enum
-{
+typedef enum {
     COAP_MSG_IF_MATCH = 1,                                                      /**< If-Match option number */
     COAP_MSG_URI_HOST = 3,                                                      /**< URI-Host option number */
     COAP_MSG_ETAG = 4,                                                          /**< Entity-Tag option number */
@@ -180,36 +168,30 @@ typedef enum
     COAP_MSG_PROXY_URI = 35,                                                    /**< Proxy-URI option number */
     COAP_MSG_PROXY_SCHEME = 39,                                                 /**< Proxy-Scheme option number */
     COAP_MSG_SIZE1 = 60                                                         /**< Size1 option number */
-}
-coap_msg_op_num_t;
+} coap_msg_op_num_t;
 
 /**
  *  @brief Option structure
  */
-typedef struct coap_msg_op
-{
-    unsigned num;                                                               /**< Option number */
-    unsigned len;                                                               /**< Option length */
-    char *val;                                                                  /**< Pointer to a buffer containing the option value */
-    struct coap_msg_op *next;                                                   /**< Pointer to the next option structure in the list */
-}
-coap_msg_op_t;
+typedef struct coap_msg_op {
+    unsigned num;                              /**< Option number */
+    unsigned len;                              /**< Option length */
+    char *val;                                 /**< Pointer to a buffer containing the option value */
+    struct coap_msg_op *next;                  /**< Pointer to the next option structure in the list */
+} coap_msg_op_t;
 
 /**
  *  @brief Option linked-list structure
  */
-typedef struct
-{
-    coap_msg_op_t *first;                                                       /**< Pointer to the first option structure in the list */
-    coap_msg_op_t *last;                                                        /**< Pointer to the last option structure in the list */
-}
-coap_msg_op_list_t;
+typedef struct {
+    coap_msg_op_t *first;                               /**< Pointer to the first option structure in the list */
+    coap_msg_op_t *last;                                /**< Pointer to the last option structure in the list */
+} coap_msg_op_list_t;
 
 /**
  *  @brief Message structure
  */
-typedef struct
-{
+typedef struct {
     unsigned ver;                                                               /**< CoAP version */
     coap_msg_type_t type;                                                       /**< Message type */
     unsigned token_len;                                                         /**< Token length */
@@ -220,8 +202,7 @@ typedef struct
     coap_msg_op_list_t op_list;                                                 /**< Option list */
     char *payload;                                                              /**< Pointer to a buffer containing the payload */
     size_t payload_len;                                                         /**< Length of the payload */
-}
-coap_msg_t;
+} coap_msg_t;
 
 /**
  *  @brief Check if option is recognized

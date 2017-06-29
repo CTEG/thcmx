@@ -40,11 +40,15 @@
 
 #include "coap_msg.h"
 
-#define coap_msg_op_list_get_first(list)       ((list)->first)					/**< Get the first option from an option linked-list */
-#define coap_msg_op_list_get_last(list)        ((list)->last)					/**< Get the last option in an option linked-list */
-#define coap_msg_op_list_is_empty(list)        ((list)->first == NULL)			/**< Indicate whether or not an option linked-list is empty */
+/**< Get the first option from an option linked-list */
+#define coap_msg_op_list_get_first(list)       ((list)->first)
+/**< Get the last option in an option linked-list */
+#define coap_msg_op_list_get_last(list)        ((list)->last)
+/**< Indicate whether or not an option linked-list is empty */
+#define coap_msg_op_list_is_empty(list)        ((list)->first == NULL)
 
-static int coap_msg_rand_init = 0;												/**< Indicates whether or not the random number generator has been initialised */
+/**< Indicates whether or not the random number generator has been initialised */
+static int coap_msg_rand_init = 0;
 
 void coap_msg_gen_rand_str(char *buf, size_t len)
 {
@@ -82,6 +86,7 @@ int coap_msg_op_num_is_recognized(unsigned num)
 	case COAP_MSG_SIZE1:
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -979,7 +984,7 @@ ssize_t coap_msg_format(coap_msg_t * msg, char *buf, size_t len)
 	return p - buf;
 }
 
-int coap_msg_copy(coap_msg_t * dst, coap_msg_t * src)
+int coap_msg_copy(coap_msg_t *dst, coap_msg_t *src)
 {
 	coap_msg_op_t *op = NULL;
 	int ret = 0;
@@ -989,37 +994,41 @@ int coap_msg_copy(coap_msg_t * dst, coap_msg_t * src)
 	if (ret < 0) {
 		return ret;
 	}
-	ret =
-		coap_msg_set_code(dst, coap_msg_get_code_class(src),
+
+	ret = coap_msg_set_code(dst, coap_msg_get_code_class(src),
 						  coap_msg_get_code_detail(src));
 	if (ret < 0) {
 		return ret;
 	}
+
 	ret = coap_msg_set_msg_id(dst, coap_msg_get_msg_id(src));
 	if (ret < 0) {
 		return ret;
 	}
-	ret =
-		coap_msg_set_token(dst, coap_msg_get_token(src),
+
+	ret = coap_msg_set_token(dst, coap_msg_get_token(src),
 						   coap_msg_get_token_len(src));
 	if (ret < 0) {
 		return ret;
 	}
+
 	op = coap_msg_get_first_op(src);
 	while (op != NULL) {
-		ret =
-			coap_msg_add_op(dst, coap_msg_op_get_num(op),
+		ret = coap_msg_add_op(dst, coap_msg_op_get_num(op),
 							coap_msg_op_get_len(op), coap_msg_op_get_val(op));
 		if (ret < 0) {
 			return ret;
 		}
 		op = coap_msg_op_get_next(op);
 	}
-	ret =
-		coap_msg_set_payload(dst, coap_msg_get_payload(src),
+
+	ret = coap_msg_set_payload(dst, coap_msg_get_payload(src),
 							 coap_msg_get_payload_len(src));
 	if (ret < 0) {
 		return ret;
 	}
+
 	return 0;
 }
+
+

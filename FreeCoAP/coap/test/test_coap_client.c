@@ -50,12 +50,12 @@
 #define HOST             "127.0.0.1"                         /**< Host address of the server */
 #endif
 
-#define PORT             "12436"                             /**< UDP port number of the server */
+#define PORT             "12436"                         /**< UDP port number of the server */
 #define TRUST_FILE_NAME  "./certs/root_server_cert.pem"  /**< DTLS trust file name */
 #define CERT_FILE_NAME   "./certs/client_cert.pem"       /**< DTLS certificate file name */
 #define KEY_FILE_NAME    "./certs/client_privkey.pem"    /**< DTLS key file name */
-#define CRL_FILE_NAME    ""                                  /**< DTLS certificate revocation list file name */
-#define COMMON_NAME      "dummy/server"                      /**< Common name of the server */
+#define CRL_FILE_NAME    ""                              /**< DTLS certificate revocation list file name */
+#define COMMON_NAME      "dummy/server"                  /**< Common name of the server */
 #define SEP_URI_PATH     "separate"   /**< URI path option value to trigger a separate response from the server */
 
 /**
@@ -863,10 +863,10 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     char *val = NULL;
 
     log_level = coap_log_get_level();
-    if (log_level < COAP_LOG_INFO)
-    {
+    if (log_level < COAP_LOG_INFO) {
         return;
     }
+
     printf("%s\n", str);
     printf("ver:         0x%02x\n", coap_msg_get_ver(msg));
     printf("type:        0x%02x\n", coap_msg_get_type(msg));
@@ -876,36 +876,37 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     printf("msg_id:      0x%04x\n", coap_msg_get_msg_id(msg));
     printf("token:      ");
     token = coap_msg_get_token(msg);
-    for (i = 0; i < coap_msg_get_token_len(msg); i++)
-    {
+    for (i = 0; i < coap_msg_get_token_len(msg); i++) {
         printf(" 0x%02x", (unsigned char)token[i]);
     }
     printf("\n");
+
     op = coap_msg_get_first_op(msg);
-    while (op != NULL)
-    {
+    while (op != NULL) {
         num = coap_msg_op_get_num(op);
         len = coap_msg_op_get_len(op);
         val = coap_msg_op_get_val(op);
         printf("op[%u].num:   %u\n", j, num);
         printf("op[%u].len:   %u\n", j, len);
         printf("op[%u].val:  ", j);
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             printf(" 0x%02x", (unsigned char)val[i]);
         }
         printf("\n");
         op = coap_msg_op_get_next(op);
         j++;
     }
+    
     printf("payload:     ");
     payload = coap_msg_get_payload(msg);
-    for (i = 0; i < coap_msg_get_payload_len(msg); i++)
-    {
+    for (i = 0; i < coap_msg_get_payload_len(msg); i++) {
         printf("%c", payload[i]);
     }
     printf("\n");
+
     printf("payload_len: %zu\n", coap_msg_get_payload_len(msg));
+
+    return;
 }
 
 /**
@@ -922,35 +923,33 @@ static test_result_t populate_req(test_coap_client_msg_t *test_req, coap_msg_t *
     int ret = 0;
 
     ret = coap_msg_set_type(req, test_req->type);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("%s", strerror(-ret));
         return FAIL;
     }
+
     ret = coap_msg_set_code(req, test_req->code_class, test_req->code_detail);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("%s", strerror(-ret));
         return FAIL;
     }
-    for (i = 0; i < test_req->num_ops; i++)
-    {
+
+    for (i = 0; i < test_req->num_ops; i++) {
         ret = coap_msg_add_op(req, test_req->ops[i].num, test_req->ops[i].len, test_req->ops[i].val);
-        if (ret < 0)
-        {
+        if (ret < 0) {
             coap_log_error("%s", strerror(-ret));
             return FAIL;
         }
     }
-    if (test_req->payload)
-    {
+
+    if (test_req->payload) {
         ret = coap_msg_set_payload(req, test_req->payload, test_req->payload_len);
-        if (ret < 0)
-        {
+        if (ret < 0) {
             coap_log_error("%s", strerror(-ret));
             return FAIL;
         }
     }
+
     return PASS;
 }
 
@@ -971,13 +970,12 @@ static test_result_t exchange(coap_client_t *client, test_coap_client_msg_t *tes
     int ret = 0;
 
     result = populate_req(test_req, req);
-    if (result != PASS)
-    {
+    if (result != PASS) {
         return result;
     }
+
     ret = coap_client_exchange(client, req, resp);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("%s", strerror(-ret));
         return FAIL;
     }
@@ -998,21 +996,20 @@ static test_result_t exchange(coap_client_t *client, test_coap_client_msg_t *tes
  */
 static test_result_t compare_ver_token(coap_msg_t *req, coap_msg_t *resp)
 {
-    if (coap_msg_get_ver(req) != coap_msg_get_ver(resp))
-    {
+    if (coap_msg_get_ver(req) != coap_msg_get_ver(resp)) {
         coap_log_warn("Version in request and response messages do not match");
         return FAIL;
     }
-    if (coap_msg_get_token_len(req) != coap_msg_get_token_len(resp))
-    {
+
+    if (coap_msg_get_token_len(req) != coap_msg_get_token_len(resp)) {
         coap_log_warn("Token length in request and response messages do not match");
         return FAIL;
-    }
-    else if (memcmp(coap_msg_get_token(req), coap_msg_get_token(resp), coap_msg_get_token_len(req)) != 0)
-    {
+    } else if (memcmp(coap_msg_get_token(req), coap_msg_get_token(resp),
+                coap_msg_get_token_len(req)) != 0) {
         coap_log_warn("Token in request and response messages do not match");
         return FAIL;
     }
+
     return PASS;
 }
 
@@ -1031,63 +1028,59 @@ static test_result_t check_resp(test_coap_client_msg_t *test_resp, coap_msg_t *r
     unsigned match = 0;
     unsigned i = 0;
 
-    if (test_resp->type != coap_msg_get_type(resp))
-    {
+    if (test_resp->type != coap_msg_get_type(resp)) {
         coap_log_warn("Unexpected type in response message");
         coap_log_debug("Received: %d", coap_msg_get_type(resp));
         coap_log_debug("Expected: %d", test_resp->type);
         return FAIL;
     }
-    if (test_resp->code_class != coap_msg_get_code_class(resp))
-    {
+
+    if (test_resp->code_class != coap_msg_get_code_class(resp)) {
         coap_log_warn("Unexpected code class in response message");
         coap_log_debug("Received: %d", coap_msg_get_code_class(resp));
         coap_log_debug("Expected: %d", test_resp->code_class);
         return FAIL;
     }
-    if (test_resp->code_detail != coap_msg_get_code_detail(resp))
-    {
+
+    if (test_resp->code_detail != coap_msg_get_code_detail(resp)) {
         coap_log_warn("Unexpected code detail in response message");
         coap_log_debug("Received: %d", coap_msg_get_code_detail(resp));
         coap_log_debug("Expected: %d", test_resp->code_detail);
         return FAIL;
     }
-    for (i = 0; i < test_resp->num_ops; i++)
-    {
+
+    for (i = 0; i < test_resp->num_ops; i++) {
         match = 0;
         exp_op = &test_resp->ops[i];
         resp_op = coap_msg_get_first_op(resp);
-        while (resp_op != NULL)
-        {
+        while (resp_op != NULL) {
             if ((coap_msg_op_get_num(resp_op) == exp_op->num)
              && (coap_msg_op_get_len(resp_op) == exp_op->len)
-             && (memcmp(coap_msg_op_get_val(resp_op), exp_op->val, exp_op->len) == 0))
-            {
+             && (memcmp(coap_msg_op_get_val(resp_op), exp_op->val, exp_op->len) == 0)) {
                 match = 1;
                 break;
             }
             resp_op = coap_msg_op_get_next(resp_op);
         }
-        if (!match)
-        {
+
+        if (!match) {
             coap_log_warn("Expected option not found in response message");
             return FAIL;
         }
     }
-    if (test_resp->payload_len != coap_msg_get_payload_len(resp))
-    {
+
+    if (test_resp->payload_len != coap_msg_get_payload_len(resp)) {
         coap_log_warn("Unexpected payload length in response message");
         coap_log_debug("Received: %d", coap_msg_get_payload_len(resp));
         coap_log_debug("Expected: %d", test_resp->payload_len);
         return FAIL;
-    }
-    else if (memcmp(test_resp->payload, coap_msg_get_payload(resp), test_resp->payload_len))
-    {
+    } else if (memcmp(test_resp->payload, coap_msg_get_payload(resp), test_resp->payload_len)) {
         coap_log_warn("Unexpected payload in response message");
         coap_log_debug("Received: %s", coap_msg_get_payload(resp));
         coap_log_debug("Expected: %s", test_resp->payload);
         return FAIL;
     }
+
     return PASS;
 }
 
@@ -1124,20 +1117,17 @@ static test_result_t test_exchange_func(test_data_t data)
                              test_data->host,
                              test_data->port);
 #endif
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("%s", strerror(-ret));
         return FAIL;
     }
 
-    for (i = 0; i < test_data->num_msg; i++)
-    {
+    for (i = 0; i < test_data->num_msg; i++) {
         coap_msg_create(&req);
         coap_msg_create(&resp);
 
         ret = exchange(&client, &test_data->test_req[i], &req, &resp);
-        if (ret != PASS)
-        {
+        if (ret != PASS) {
             coap_msg_destroy(&resp);
             coap_msg_destroy(&req);
             coap_client_destroy(&client);
@@ -1145,8 +1135,7 @@ static test_result_t test_exchange_func(test_data_t data)
         }
 
         ret = compare_ver_token(&req, &resp);
-        if (ret != PASS)
-        {
+        if (ret != PASS) {
             coap_msg_destroy(&resp);
             coap_msg_destroy(&req);
             coap_client_destroy(&client);
@@ -1154,8 +1143,7 @@ static test_result_t test_exchange_func(test_data_t data)
         }
 
         ret = check_resp(&test_data->test_resp[i], &resp);
-        if (ret != PASS)
-        {
+        if (ret != PASS) {
             coap_msg_destroy(&resp);
             coap_msg_destroy(&req);
             coap_client_destroy(&client);
@@ -1165,6 +1153,7 @@ static test_result_t test_exchange_func(test_data_t data)
         coap_msg_destroy(&resp);
         coap_msg_destroy(&req);
     }
+
     coap_client_destroy(&client);
 
     return result;
