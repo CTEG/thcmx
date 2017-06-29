@@ -60,10 +60,15 @@ typedef struct {
     char *data;       /* pointer to actual buffer */
 } data_buf_t;
 
+
 int data_buf_create(data_buf_t *buf, size_t size, size_t max_size);
+
 void data_buf_destroy(data_buf_t *buf);
+
 int data_buf_expand(data_buf_t *buf);
+
 size_t data_buf_add(data_buf_t *buf, size_t num);
+
 size_t data_buf_consume(data_buf_t *buf, size_t num);
 
 #endif

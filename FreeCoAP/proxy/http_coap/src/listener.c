@@ -32,6 +32,7 @@
  */
 
 #include <stdlib.h>
+
 #include "listener.h"
 #include "connection.h"
 #include "sock.h"
@@ -52,29 +53,24 @@ static void *listener_thread_func(void *data)
 
     coap_log_notice("[%u] Listening on port %s", listener->index, param_get_port(listener->param));
 
-    while (go)
-    {
+    while (go) {
         sock = (tls_sock_t *)malloc(sizeof(tls_sock_t));
-        if (sock == NULL)
-        {
+        if (sock == NULL) {
             coap_log_error("Out of memory");
             break;
         }
 
         ret = tls_ssock_accept(&listener->ssock, sock);
-        if (ret != SOCK_OK)
-        {
+        if (ret != SOCK_OK) {
             free(sock);
-            if (ret != SOCK_TIMEOUT)
-            {
+            if (ret != SOCK_TIMEOUT) {
                 coap_log_error("TLS socket error: %s", sock_strerror(ret));
             }
             continue;
         }
 
         con = connection_new(sock, listener->index, con_index++, listener->param);
-        if (con == NULL)
-        {
+        if (con == NULL) {
             coap_log_error("Unable to create connection data");
             tls_sock_close(sock);
             free(sock);
@@ -82,18 +78,18 @@ static void *listener_thread_func(void *data)
         }
 
         ret = thread_init(&thread, &listener->ctx, connection_thread_func, con);
-        if (ret < 0)
-        {
+        if (ret < 0) {
             coap_log_error("Unable to create connection thread");
             connection_delete(con);
             break;
         }
     }
+
     coap_log_notice("[%u] Stopped listening on port %s", listener->index, param_get_port(listener->param));
     listener_delete(listener);
+
     return NULL;
 }
-
 
 listener_t *listener_new(unsigned index, tls_server_t *server, param_t *param, int timeout, int backlog)
 {
@@ -101,8 +97,7 @@ listener_t *listener_new(unsigned index, tls_server_t *server, param_t *param, i
     int ret = 0;
 
     listener = (listener_t *)malloc(sizeof(listener_t));
-    if (listener == NULL)
-    {
+    if (listener == NULL) {
         coap_log_error("Out of memory");
         return NULL;
     }
@@ -111,16 +106,14 @@ listener_t *listener_new(unsigned index, tls_server_t *server, param_t *param, i
     listener->param = param;
 
     ret = thread_detached_ctx_create(&listener->ctx);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("Unable to initialise thread context");
         free(listener);
         return NULL;
     }
 
     ret = tls_ssock_open(&listener->ssock, server, param_get_port(param), timeout, backlog);
-    if (ret != SOCK_OK)
-    {
+    if (ret != SOCK_OK) {
         coap_log_error(sock_strerror(ret));
         thread_ctx_destroy(&listener->ctx);
         free(listener);
@@ -143,10 +136,10 @@ int listener_run(listener_t *listener)
     int ret = 0;
 
     ret = thread_init(&thread, &listener->ctx, listener_thread_func, listener);
-    if (ret < 0)
-    {
+    if (ret < 0) {
         coap_log_error("Unable to create listener thread");
         return -1;
     }
+
     return 0;
 }

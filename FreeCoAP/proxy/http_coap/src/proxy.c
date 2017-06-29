@@ -43,12 +43,12 @@
 #include "tls.h"
 #include "coap_log.h"
 
-#define DEF_MAX_LOG_LEVEL  COAP_LOG_DEBUG                                       /**< Default maximum log level */
-#define CONFIG_FILE_NAME   "proxy.conf"                                         /**< Configuration file name */
-#define SOCKET_TIMEOUT     120                                                  /**< Timeout for TLS/IPv6 socket operations */
-#define SOCKET_BACKLOG     10                                                   /**< Backlog queue size for the listening TLS/IPv6 socket */
+#define DEF_MAX_LOG_LEVEL  COAP_LOG_DEBUG   /**< Default maximum log level */
+#define CONFIG_FILE_NAME   "proxy.conf"     /**< Configuration file name */
+#define SOCKET_TIMEOUT     120              /**< Timeout for TLS/IPv6 socket operations */
+#define SOCKET_BACKLOG     10               /**< Backlog queue size for the listening TLS/IPv6 socket */
 
-int go = 1;                                                                     /**< Global variable used to indicate to the listener module to run or stop */
+int go = 1;      /**< Global variable used to indicate to the listener module to run or stop */
 
 /**
  *  @brief Signal handler for the interrupt signal

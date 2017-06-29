@@ -47,8 +47,7 @@
 /**
  *  @brief CoAP message option test data structure
  */
-typedef struct
-{
+typedef struct {
     unsigned num;                                                               /**< Option number */
     unsigned len;                                                               /**< Option length */
     char *val;                                                                  /**< Pointer to a buffer containing the option value */
@@ -57,8 +56,7 @@ typedef struct
 /**
  *  @brief HTTP/CoAP message/URI cross test data structure
  */
-typedef struct
-{
+typedef struct {
     const char *http_to_coap_desc;                                              /**< Test description for the HTTP to CoAP conversion test */
     const char *coap_to_http_desc;                                              /**< Test description for the CoAP to HTTP conversion test */
     const char *str;                                                            /**< String containing a HTTP message or HTTP URI */
@@ -465,12 +463,11 @@ test_result_t test_uri_http_to_coap_func(test_data_t data)
 
     /* convert the HTTP URI to a CoAP URI */
     ret = cross_uri_http_to_coap(&coap_msg, test_data->str);
-    if (ret != test_data->cross_ret)
-    {
+    if (ret != test_data->cross_ret) {
         result = FAIL;
     }
-    if (test_data->cross_ret != 0)
-    {
+
+    if (test_data->cross_ret != 0) {
         coap_msg_destroy(&coap_msg);
         return result;
     }
@@ -753,6 +750,7 @@ test_result_t test_msg_coap_to_http_func(test_data_t data)
 
     http_msg_destroy(&http_msg);
     coap_msg_destroy(&coap_msg);
+
     return result;
 }
 

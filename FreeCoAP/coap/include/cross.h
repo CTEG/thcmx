@@ -37,7 +37,7 @@
 #include "coap_msg.h"
 #include "http_msg.h"
 
-#define CROSS_COAP_REQ_TYPE  COAP_MSG_NON                                     /**< CoAP request message type */
+#define CROSS_COAP_REQ_TYPE  COAP_MSG_NON        /**< CoAP request message type */
 
 /**
  *  @brief Convert a HTTP response code to a string representation

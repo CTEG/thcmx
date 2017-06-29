@@ -11,8 +11,8 @@ set(BUILDDIR ${TOPDIR}/cmake_build/build)
 #SET(CMAKE_BUILD_TYPE "Debug")
 #SET(CMAKE_CXX_FLAGS_DEBUG "-g -Wall")
 
+add_compile_options(-Wall -Wno-unused-local-typedefs -O2 -Os -fomit-frame-pointer)
 #add_compile_options("--std=c++11")
-#add_compile_options(-DBUILD_SSL)
 
 #add_definitions(-DCOAP_IP6)
 #add_definitions(-DSOCK_IP6)

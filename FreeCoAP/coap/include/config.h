@@ -41,46 +41,43 @@
 #define config_entry_get_value(entry)  ((entry)->value)
 #define config_entry_get_next(entry)   ((entry)->next)
 
-typedef enum
-{
+typedef enum {
     CONFIG_DONE = 1,       /* processing (parsing) completed successfully - only used internally */
     CONFIG_OK = 0,         /* success */
     CONFIG_EINVAL = -1,    /* invalid argument */
     CONFIG_ENOMEM = -2,    /* no (dynamic) memory */
     CONFIG_ELEXICAL = -3,  /* lexical error */
     CONFIG_ESYNTAX = -4    /* syntax error */
-}
-config_error_t;
+} config_error_t;
 
-typedef struct config_entry_t
-{
+typedef struct config_entry_t {
     char *name;
     char *value;
     struct config_entry_t *next;
-}
-config_entry_t;
+} config_entry_t;
 
-typedef struct config_section_t
-{
+typedef struct config_section_t {
     char *name;
     config_entry_t *first;
     config_entry_t *last;
     struct config_section_t *next;
-}
-config_section_t;
+} config_section_t;
 
-typedef struct
-{
+typedef struct {
     config_section_t *first;
     config_section_t *last;
-}
-config_t;
+} config_t;
 
 const char *config_strerr(int error);
+
 void config_create(config_t * config);
+
 void config_destroy(config_t *config);
+
 int config_set(config_t *config, const char *section_name, const char *entry_name, const char *entry_value);
+
 const char *config_get(config_t *config, const char *section_name, const char *entry_name);
+
 int config_parse(config_t *config, const char *str, unsigned *line, unsigned *col);
 
 #endif

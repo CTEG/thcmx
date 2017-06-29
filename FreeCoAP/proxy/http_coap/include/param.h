@@ -54,8 +54,7 @@
 #define param_get_coap_client_cert_file_name(param)   ((param)->coap_client_cert_file_name)
 #define param_get_coap_client_trust_file_name(param)  ((param)->coap_client_trust_file_name)
 
-typedef struct
-{
+typedef struct {
     char *port;
     coap_log_level_t max_log_level;
     char *http_server_key_file_name;
@@ -64,8 +63,7 @@ typedef struct
     char *coap_client_key_file_name;
     char *coap_client_cert_file_name;
     char *coap_client_trust_file_name;
-}
-param_t;
+} param_t;
 
 int param_create(param_t *param, const char *file_name);
 void param_destroy(param_t *param);

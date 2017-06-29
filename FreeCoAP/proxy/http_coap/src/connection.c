@@ -37,6 +37,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <fcntl.h>
+
 #include "connection.h"
 #include "http_msg.h"
 #include "uri.h"
@@ -51,26 +52,22 @@
 #define CONNECTION_DATA_BUF_MIN_SPACE  128
 #define CONNECTION_INT_BUF_LEN         16
 
-typedef enum
-{
+typedef enum {
     CON_RET_TIMEDOUT = 1,
     CON_RET_CLOSED = 2,
-}
-con_ret_t;
+} con_ret_t;
 
 #ifdef CONNECTION_STATS
 
 #define STATS_BUF_LEN  256
 
-typedef struct
-{
+typedef struct {
     unsigned ok_con;
     unsigned fail_con;
     unsigned ok_trans;
     unsigned fail_trans;
     lock_t lock;
-}
-connection_stats_t;
+} connection_stats_t;
 
 connection_stats_t stats = {0};
 
@@ -619,8 +616,7 @@ connection_t *connection_new(tls_sock_t *sock, unsigned listener_index, unsigned
 
 void connection_delete(connection_t *con)
 {
-    if (con->coap_client_active)
-    {
+    if (con->coap_client_active) {
         connection_coap_client_destroy(con);
     }
     data_buf_destroy(&con->send_buf);

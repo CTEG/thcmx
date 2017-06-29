@@ -534,15 +534,13 @@ test_result_t test_set_get_func(test_data_t data)
 
     config_create(&config);
 
-    for (i = 0; i < test_data->num_set_entries; i++)
-    {
+    for (i = 0; i < test_data->num_set_entries; i++) {
         section_name = test_data->set_entries[i].section_name;
         entry_name = test_data->set_entries[i].entry_name;
         entry_value = test_data->set_entries[i].entry_value;
 
         ret = config_set(&config, section_name, entry_name, entry_value);
-        if (ret != 0)
-        {
+        if (ret != 0) {
             result = FAIL;
         }
 
@@ -550,15 +548,14 @@ test_result_t test_set_get_func(test_data_t data)
                     section_name, entry_name, entry_value);
     }
     DEBUG_PRINT("\n");
-    for (i = 0; i < test_data->num_get_entries; i++)
-    {
+
+    for (i = 0; i < test_data->num_get_entries; i++) {
         section_name = test_data->get_entries[i].section_name;
         entry_name = test_data->get_entries[i].entry_name;
         entry_value = test_data->get_entries[i].entry_value;
 
         val = config_get(&config, section_name, entry_name);
-        if ((val == NULL) || (strcmp(val, entry_value) != 0))
-        {
+        if ((val == NULL) || (strcmp(val, entry_value) != 0)) {
             result = FAIL;
         }
 
@@ -593,22 +590,19 @@ test_result_t test_parse_func(test_data_t data)
 
     ret = config_parse(&config, test_data->str, &line, &col);
     if ((ret != test_data->parse_ret) || (line != test_data->parse_line)
-        || (col != test_data->parse_col))
-    {
+        || (col != test_data->parse_col)) {
         DEBUG_PRINT("Error: config_parse returned: %d, '%s', line: %d, col: %d\n",
                         ret, config_strerr(ret), line, col);
         result = FAIL;
     }
 
-    for (i = 0; i < test_data->num_get_entries; i++)
-    {
+    for (i = 0; i < test_data->num_get_entries; i++) {
         section_name = test_data->get_entries[i].section_name;
         entry_name = test_data->get_entries[i].entry_name;
         entry_value = test_data->get_entries[i].entry_value;
 
         val = config_get(&config, section_name, entry_name);
-        if ((val == NULL) || (strcmp(val, entry_value) != 0))
-        {
+        if ((val == NULL) || (strcmp(val, entry_value) != 0)) {
             result = FAIL;
         }
 
@@ -638,10 +632,10 @@ test_result_t test_parse_invalid(test_data_t data)
 
     ret = config_parse(&config, test_data->str, &line, &col);
     if ((ret != test_data->parse_ret) || (line != test_data->parse_line)
-            || (col != test_data->parse_col))
-    {
+            || (col != test_data->parse_col)) {
         result = FAIL;
     }
+
     DEBUG_PRINT("config_parse returned: %d, '%s', line: %d, col: %d\n",
                     ret, config_strerr(ret), line, col);
 
