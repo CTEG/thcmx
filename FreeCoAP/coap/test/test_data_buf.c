@@ -96,19 +96,18 @@ test_result_t test1_func(test_data_t data)
     printf("%s\n", test_data->desc);
 
     ret = data_buf_create(&buf, test_data->size, test_data->max_size);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         DEBUG_PRINT("Fail: call to data_buf_create failed\n");
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != 0)
-    {
+
+    if (data_buf_get_count(&buf) != 0) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != test_data->size)
-    {
+
+    if (data_buf_get_space(&buf) != test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -116,20 +115,19 @@ test_result_t test1_func(test_data_t data)
 
     /* first read */
     num = test_data_buf_memcpy(&buf, test_data->str, test_data->str_len);
-    if (num != test_data->str_len)
-    {
+    if (num != test_data->str_len) {
         DEBUG_PRINT("Fail: call to data_buf_read failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != test_data->str_len)
-    {
+
+    if (data_buf_get_count(&buf) != test_data->str_len) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != test_data->size - test_data->str_len)
-    {
+
+    if (data_buf_get_space(&buf) != test_data->size - test_data->str_len) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -137,20 +135,19 @@ test_result_t test1_func(test_data_t data)
 
     /* second read */
     num = test_data_buf_memcpy(&buf, test_data->str, test_data->str_len);
-    if (num != test_data->size - test_data->str_len)
-    {
+    if (num != test_data->size - test_data->str_len) {
         DEBUG_PRINT("Fail: call to test_data_buf_memcpy failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != test_data->size)
-    {
+
+    if (data_buf_get_count(&buf) != test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != 0)
-    {
+
+    if (data_buf_get_space(&buf) != 0) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -158,20 +155,19 @@ test_result_t test1_func(test_data_t data)
 
     /* third read */
     num = test_data_buf_memcpy(&buf, test_data->str, test_data->str_len);
-    if (num != 0)
-    {
+    if (num != 0) {
         DEBUG_PRINT("Fail: call to test_data_buf_memcpy failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != test_data->size)
-    {
+
+    if (data_buf_get_count(&buf) != test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != 0)
-    {
+
+    if (data_buf_get_space(&buf) != 0) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -179,20 +175,19 @@ test_result_t test1_func(test_data_t data)
 
     /* expand */
     num = data_buf_expand(&buf);
-    if (num != 0)
-    {
+    if (num != 0) {
         DEBUG_PRINT("Fail: call to data_buf_expand failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != test_data->size)
-    {
+
+    if (data_buf_get_count(&buf) != test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != test_data->size)
-    {
+
+    if (data_buf_get_space(&buf) != test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -200,20 +195,19 @@ test_result_t test1_func(test_data_t data)
 
     /* fourth read */
     num = test_data_buf_memcpy(&buf, test_data->str, test_data->str_len);
-    if (num != test_data->str_len)
-    {
+    if (num != test_data->str_len) {
         DEBUG_PRINT("Fail: call to test_data_buf_memcpy failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != test_data->size + test_data->str_len)
-    {
+
+    if (data_buf_get_count(&buf) != test_data->size + test_data->str_len) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != test_data->size - test_data->str_len)
-    {
+
+    if (data_buf_get_space(&buf) != test_data->size - test_data->str_len) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -221,20 +215,19 @@ test_result_t test1_func(test_data_t data)
 
     /* fifth read */
     num = test_data_buf_memcpy(&buf, test_data->str, test_data->str_len);
-    if (num != test_data->size - test_data->str_len)
-    {
+    if (num != test_data->size - test_data->str_len) {
         DEBUG_PRINT("Fail: call to test_data_buf_memcpy failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != 2 * test_data->size)
-    {
+
+    if (data_buf_get_count(&buf) != 2 * test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != 0)
-    {
+
+    if (data_buf_get_space(&buf) != 0) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -242,20 +235,19 @@ test_result_t test1_func(test_data_t data)
 
     /* sixth read */
     num = test_data_buf_memcpy(&buf, test_data->str, test_data->str_len);
-    if (num != 0)
-    {
+    if (num != 0) {
         DEBUG_PRINT("Fail: call to test_data_buf_memcpy failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != 2 * test_data->size)
-    {
+
+    if (data_buf_get_count(&buf) != 2 * test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != 0)
-    {
+
+    if (data_buf_get_space(&buf) != 0) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -263,20 +255,19 @@ test_result_t test1_func(test_data_t data)
 
     /* attempt to expand again */
     num = data_buf_expand(&buf);
-    if (num != -EINVAL)
-    {
+    if (num != -EINVAL) {
         DEBUG_PRINT("Fail: call to data_buf_expand failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_count(&buf) != 2 * test_data->size)
-    {
+
+    if (data_buf_get_count(&buf) != 2 * test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_get_count failed\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
-    if (data_buf_get_space(&buf) != 0)
-    {
+
+    if (data_buf_get_space(&buf) != 0) {
         DEBUG_PRINT("Fail: call to data_buf_get_space failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -284,15 +275,14 @@ test_result_t test1_func(test_data_t data)
 
     /* check 1 */
     num = data_buf_get_count(&buf);
-    if (num != test_data->str1_len)
-    {
+    if (num != test_data->str1_len) {
         DEBUG_PRINT("Fail: Incorrect final string length\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
+
     p = data_buf_get_data(&buf);
-    if (strcmp(p, test_data->str1) != 0)
-    {
+    if (strcmp(p, test_data->str1) != 0) {
         DEBUG_PRINT("Fail: Incorrect final string\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -301,8 +291,7 @@ test_result_t test1_func(test_data_t data)
 
     /* consume some data */
     num = data_buf_consume(&buf, test_data->size);
-    if (num != test_data->size)
-    {
+    if (num != test_data->size) {
         DEBUG_PRINT("Fail: call to data_buf_consume failed\n");
         data_buf_destroy(&buf);
         return FAIL;
@@ -310,15 +299,14 @@ test_result_t test1_func(test_data_t data)
 
     /* check 2 */
     num = data_buf_get_count(&buf);
-    if (num != test_data->str2_len)
-    {
+    if (num != test_data->str2_len) {
         DEBUG_PRINT("Fail: Incorrect final string length\n");
         data_buf_destroy(&buf);
         return FAIL;
     }
+
     p = data_buf_get_data(&buf);
-    if (strcmp(p, test_data->str2) != 0)
-    {
+    if (strcmp(p, test_data->str2) != 0) {
         DEBUG_PRINT("Fail: Incorrect final string\n");
         data_buf_destroy(&buf);
         return FAIL;

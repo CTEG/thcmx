@@ -53,14 +53,12 @@
 #define data_buf_get_space(buf)     (((buf)->size) - ((buf)->count))  /* number of free byte positions beginning at count */
 #define data_buf_get_next(buf)      ((buf)->data + (buf)->count)
 
-typedef struct
-{
+typedef struct {
     size_t count;     /* number of bytes stored in the buffer */
     size_t size;      /* current size of buffer */
     size_t max_size;  /* max allowed size of buffer */
     char *data;       /* pointer to actual buffer */
-}
-data_buf_t;
+} data_buf_t;
 
 int data_buf_create(data_buf_t *buf, size_t size, size_t max_size);
 void data_buf_destroy(data_buf_t *buf);

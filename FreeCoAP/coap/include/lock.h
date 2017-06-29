@@ -44,27 +44,27 @@ static inline int lock_create(lock_t *lock)
     int ret = 0;
 
     ret = pthread_mutexattr_init(&attr);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
+
     ret = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         pthread_mutexattr_destroy(&attr);
         return -1;
     }
+
     ret = pthread_mutex_init(lock, &attr);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         pthread_mutexattr_destroy(&attr);
         return -1;
     }
+
     ret = pthread_mutexattr_destroy(&attr);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
+
     return 0;
 }
 
@@ -78,10 +78,10 @@ static inline int lock_get(lock_t *lock)
     int ret = 0;
 
     ret = pthread_mutex_lock(lock);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
+
     return 0;
 }
 
@@ -90,10 +90,10 @@ static inline int lock_put(lock_t *lock)
     int ret = 0;
 
     ret = pthread_mutex_unlock(lock);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         return -1;
     }
+    
     return 0;
 }
 
