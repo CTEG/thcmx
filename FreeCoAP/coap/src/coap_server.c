@@ -52,20 +52,20 @@
 #include "coap_server.h"
 #include "coap_log.h"
 
-#define COAP_SERVER_ACK_TIMEOUT_SEC       2										/**< Minimum delay to wait before retransmitting a confirmable message */
-#define COAP_SERVER_MAX_RETRANSMIT        4										/**< Maximum number of times a confirmable message can be retransmitted */
+#define COAP_SERVER_ACK_TIMEOUT_SEC       2			/**< Minimum delay to wait before retransmitting a confirmable message */
+#define COAP_SERVER_MAX_RETRANSMIT        4			/**< Maximum number of times a confirmable message can be retransmitted */
 
 #ifdef COAP_DTLS_EN
 
-#define COAP_SERVER_DTLS_MTU              COAP_MSG_MAX_BUF_LEN					/**< Maximum transmission unit excluding the UDP and IPv6 headers */
-#define COAP_SERVER_DTLS_RETRANS_TIMEOUT  100									/**< Retransmission timeout (msec) for the DTLS handshake */
-#define COAP_SERVER_DTLS_TOTAL_TIMEOUT    5000									/**< Total timeout (msec) for the DTLS handshake */
-#define COAP_SERVER_DTLS_NUM_DH_BITS      1024									/**< DTLS Diffie-Hellman key size */
+#define COAP_SERVER_DTLS_MTU              COAP_MSG_MAX_BUF_LEN	/**< Maximum transmission unit excluding the UDP and IPv6 headers */
+#define COAP_SERVER_DTLS_RETRANS_TIMEOUT  100					/**< Retransmission timeout (msec) for the DTLS handshake */
+#define COAP_SERVER_DTLS_TOTAL_TIMEOUT    5000					/**< Total timeout (msec) for the DTLS handshake */
+#define COAP_SERVER_DTLS_NUM_DH_BITS      1024					/**< DTLS Diffie-Hellman key size */
 #define COAP_SERVER_DTLS_PRIORITIES       "PERFORMANCE:-VERS-TLS-ALL:+VERS-DTLS1.0:%SERVER_PRECEDENCE"
 																				/**< DTLS priorities */
 #endif
 
-static int rand_init = 0;														/**< Indicates if the random number generator has been initialised */
+static int rand_init = 0;				/**< Indicates if the random number generator has been initialised */
 
 /****************************************************************************************************
  *                                         coap_server_path                                         *
@@ -1608,7 +1608,7 @@ static coap_server_trans_t *coap_server_find_trans(coap_server_t * server,
 			return trans;
 		}
 	}
-	
+
 	return NULL;
 }
 

@@ -38,6 +38,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <gnutls/x509.h>
+
 #include "tls_sock.h"
 #include "coap_log.h"
 
@@ -679,6 +680,7 @@ int tls_ssock_accept(tls_ssock_t * ss, tls_sock_t * s)
 
 	tv.tv_sec = ss->timeout;
 	tv.tv_usec = 0;
+	
 	while (1) {
 		s->sd = accept(ss->sd, (struct sockaddr *)&s->sin, &addrlen);
 		if (s->sd > 0) {
@@ -708,5 +710,6 @@ int tls_ssock_accept(tls_ssock_t * ss, tls_sock_t * s)
 
 	s->type = TLS_SOCK_SERVER;
 	s->u.server = ss->server;
+
 	return tls_sock_open_(s, NULL, ss->timeout);
 }

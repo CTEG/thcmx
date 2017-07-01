@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+
 #include "cross.h"
 #include "uri.h"
 
@@ -91,6 +92,7 @@ static int cross_method_http_to_coap(coap_msg_t * coap_msg,
 		*code = 400;
 		return -EBADMSG;
 	}
+
 	if (strcmp(str, "GET") == 0) {
 		coap_msg_set_code(coap_msg, COAP_MSG_REQ, COAP_MSG_GET);
 	} else if (strcmp(str, "POST") == 0) {
@@ -103,6 +105,7 @@ static int cross_method_http_to_coap(coap_msg_t * coap_msg,
 		*code = 501;
 		return -EBADMSG;
 	}
+
 	return 0;
 }
 
@@ -192,6 +195,7 @@ static int cross_status_coap_to_http(http_msg_t * http_msg,
 									  "Not Implemented");
 		}
 	}
+
 	return -EBADMSG;
 }
 
@@ -334,6 +338,7 @@ int cross_uri_http_to_coap(coap_msg_t * coap_msg, const char *http_uri)
 	}
 
 	uri_destroy(&uri);
+
 	return 0;
 }
 
@@ -545,6 +550,7 @@ static int cross_headers_http_to_coap(coap_msg_t * coap_msg,
 		}
 		http_header = http_msg_header_get_next(http_header);
 	}
+
 	return 0;
 }
 
@@ -626,6 +632,7 @@ static int cross_headers_coap_to_http(coap_msg_t * coap_msg,
 		}
 		op = coap_msg_op_get_next(op);
 	}
+
 	return 0;
 }
 
@@ -644,13 +651,13 @@ int cross_body_http_to_coap(coap_msg_t * coap_msg, http_msg_t * http_msg)
 	int ret = 0;
 
 	if (http_msg_get_body_len(http_msg)) {
-		ret =
-			coap_msg_set_payload(coap_msg, http_msg_get_body(http_msg),
+		ret = coap_msg_set_payload(coap_msg, http_msg_get_body(http_msg),
 								 http_msg_get_body_len(http_msg));
 		if (ret < 0) {
 			return ret;
 		}
 	}
+
 	return 0;
 }
 
@@ -670,23 +677,24 @@ static int cross_body_coap_to_http(http_msg_t * http_msg, coap_msg_t * coap_msg)
 	int ret = 0;
 
 	if (coap_msg_get_payload_len(coap_msg) > 0) {
-		ret =
-			http_msg_set_body(http_msg, coap_msg_get_payload(coap_msg),
+		ret = http_msg_set_body(http_msg, coap_msg_get_payload(coap_msg),
 							  coap_msg_get_payload_len(coap_msg));
 		if (ret < 0) {
 			return ret;
 		}
-		ret =
-			snprintf(tmp, sizeof(tmp), "%zu",
+
+		ret = snprintf(tmp, sizeof(tmp), "%zu",
 					 coap_msg_get_payload_len(coap_msg));
 		if (ret >= sizeof(tmp)) {
 			return -ENOSPC;
 		}
+		
 		ret = http_msg_set_header(http_msg, "Content-Length", tmp);
 		if (ret < 0) {
 			return ret;
 		}
 	}
+
 	return 0;
 }
 
@@ -721,6 +729,7 @@ int cross_req_http_to_coap(coap_msg_t * coap_msg, http_msg_t * http_msg,
 	}
 
 	*code = 0;
+
 	return 0;
 }
 
@@ -750,5 +759,6 @@ int cross_resp_coap_to_http(http_msg_t * http_msg, coap_msg_t * coap_msg,
 	}
 
 	*code = 0;
+
 	return 0;
 }

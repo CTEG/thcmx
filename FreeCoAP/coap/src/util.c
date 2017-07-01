@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "util.h"
 
 /*  always writes a terminating null character if dst_len > 0

@@ -501,6 +501,7 @@ test_result_t test_uri_http_to_coap_func(test_data_t data)
     }
 
     coap_msg_destroy(&coap_msg);
+
     return result;
 }
 

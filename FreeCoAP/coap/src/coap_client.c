@@ -50,20 +50,20 @@
 #include "coap_client.h"
 #include "coap_log.h"
 
-#define COAP_CLIENT_ACK_TIMEOUT_SEC   2											/**< Minimum delay to wait before retransmitting a confirmable message */
-#define COAP_CLIENT_MAX_RETRANSMIT    4											/**< Maximum number of times a confirmable message can be retransmitted */
-#define COAP_CLIENT_RESP_TIMEOUT_SEC  30										/**< Maximum amount of time to wait for a response */
+#define COAP_CLIENT_ACK_TIMEOUT_SEC   2					/**< Minimum delay to wait before retransmitting a confirmable message */
+#define COAP_CLIENT_MAX_RETRANSMIT    4					/**< Maximum number of times a confirmable message can be retransmitted */
+#define COAP_CLIENT_RESP_TIMEOUT_SEC  30				/**< Maximum amount of time to wait for a response */
 
 #ifdef COAP_DTLS_EN
 
-#define COAP_CLIENT_DTLS_MTU              COAP_MSG_MAX_BUF_LEN					/**< Maximum transmission unit excluding the UDP and IPv6 headers */
-#define COAP_CLIENT_DTLS_RETRANS_TIMEOUT  100									/**< Retransmission timeout (msec) for the DTLS handshake */
-#define COAP_CLIENT_DTLS_TOTAL_TIMEOUT    5000									/**< Total timeout (msec) for the DTLS handshake */
+#define COAP_CLIENT_DTLS_MTU              COAP_MSG_MAX_BUF_LEN		/**< Maximum transmission unit excluding the UDP and IPv6 headers */
+#define COAP_CLIENT_DTLS_RETRANS_TIMEOUT  100						/**< Retransmission timeout (msec) for the DTLS handshake */
+#define COAP_CLIENT_DTLS_TOTAL_TIMEOUT    5000						/**< Total timeout (msec) for the DTLS handshake */
 #define COAP_CLIENT_DTLS_PRIORITIES       "PERFORMANCE:-VERS-TLS-ALL:+VERS-DTLS1.0:%SERVER_PRECEDENCE"
-																				/**< DTLS priorities */
+																	/**< DTLS priorities */
 #endif
 
-static int rand_init = 0;														/**< Indicates whether or not the random number generator has been initialised */
+static int rand_init = 0;		/**< Indicates whether or not the random number generator has been initialised */
 
 #ifdef COAP_DTLS_EN
 
@@ -90,16 +90,20 @@ static int coap_client_dtls_listen_timeout(coap_client_t * client, unsigned ms)
 
 	tv.tv_sec = ms / 1000;
 	tv.tv_usec = (ms % 1000) * 1000;
+
 	while (1) {
 		FD_ZERO(&read_fds);
 		FD_SET(client->sd, &read_fds);
+
 		ret = select(client->sd + 1, &read_fds, NULL, NULL, &tv);
 		if (ret < 0) {
 			return -errno;
 		}
+
 		if (ret == 0) {
 			return 0;			/* timeout */
 		}
+
 		if (FD_ISSET(client->sd, &read_fds)) {
 			return 1;			/* success */
 		}
@@ -125,7 +129,8 @@ static ssize_t coap_client_dtls_pull_func(gnutls_transport_ptr_t data,
 {
 	coap_client_t *client = NULL;
 
-	client = (coap_client_t *) data;
+	client = (coap_client_t *)data;
+
 	return recv(client->sd, buf, len, 0);
 }
 
@@ -155,9 +160,11 @@ static int coap_client_dtls_pull_timeout_func(gnutls_transport_ptr_t data,
 	if (ret == 0) {
 		return 0;				/* timeout */
 	}
+
 	if (ret < 0) {
 		return -1;
 	}
+
 	return recv(client->sd, buf, sizeof(buf), MSG_PEEK);
 }
 
@@ -180,7 +187,8 @@ static ssize_t coap_client_dtls_push_func(gnutls_transport_ptr_t data,
 {
 	coap_client_t *client = NULL;
 
-	client = (coap_client_t *) data;
+	client = (coap_client_t *)data;
+
 	return sendto(client->sd, buf, len, 0,
 				  (struct sockaddr *)&client->server_sin,
 				  client->server_sin_len);
@@ -204,9 +212,7 @@ static int coap_client_dtls_handshake(coap_client_t * client)
 	int ret = 0;
 	int i = 0;
 
-	for (i = 0;
-		 i < COAP_CLIENT_DTLS_TOTAL_TIMEOUT / COAP_CLIENT_DTLS_RETRANS_TIMEOUT;
-		 i++) {
+	for (i = 0; i < COAP_CLIENT_DTLS_TOTAL_TIMEOUT / COAP_CLIENT_DTLS_RETRANS_TIMEOUT; i++) {
 		errno = 0;
 		ret = gnutls_handshake(client->session);
 		if ((errno != 0) && (errno != EAGAIN)) {
@@ -235,13 +241,14 @@ static int coap_client_dtls_handshake(coap_client_t * client)
 		if (ret != GNUTLS_E_AGAIN) {
 			return -1;
 		}
-		ret =
-			coap_client_dtls_listen_timeout(client,
+
+		ret = coap_client_dtls_listen_timeout(client,
 											COAP_CLIENT_DTLS_RETRANS_TIMEOUT);
 		if (ret < 0) {
 			return ret;
 		}
 	}
+
 	return -ETIMEDOUT;
 }
 
@@ -290,22 +297,26 @@ static int coap_client_dtls_verify_peer_cert(coap_client_t * client,
 		coap_log_error("The peer certificate has been revoked");
 		return -1;
 	}
+
 	cert_type = gnutls_certificate_type_get(client->session);
 	if (cert_type != GNUTLS_CRT_X509) {
 		coap_log_error("The peer certificate is not an X509 certificate");
 		return -1;
 	}
+
 	ret = gnutls_x509_crt_init(&cert);
 	if (ret != GNUTLS_E_SUCCESS) {
 		coap_log_error("Unable to initialise gnutls_x509_crt_t object");
 		return -1;
 	}
+
 	cert_list = gnutls_certificate_get_peers(client->session, &cert_list_size);
 	if (cert_list == NULL) {
 		coap_log_error("No peer certificate found");
 		gnutls_x509_crt_deinit(cert);
 		return -1;
 	}
+
 	/* We only check the first (leaf) certificate in the chain */
 	ret = gnutls_x509_crt_import(cert, &cert_list[0], GNUTLS_X509_FMT_DER);
 	if (ret != GNUTLS_E_SUCCESS) {
@@ -313,19 +324,23 @@ static int coap_client_dtls_verify_peer_cert(coap_client_t * client,
 		gnutls_x509_crt_deinit(cert);
 		return -1;
 	}
+
 	current_time = time(NULL);
+
 	expiration_time = gnutls_x509_crt_get_expiration_time(cert);
 	if ((expiration_time == -1) || (expiration_time < current_time)) {
 		coap_log_error("The peer certificate has expired");
 		gnutls_x509_crt_deinit(cert);
 		return -1;
 	}
+
 	activation_time = gnutls_x509_crt_get_activation_time(cert);
 	if ((activation_time == -1) || (activation_time > current_time)) {
 		coap_log_error("The peer certificate is not yet activated");
 		gnutls_x509_crt_deinit(cert);
 		return -1;
 	}
+
 	if (common_name != NULL) {
 		ret = gnutls_x509_crt_check_hostname(cert, common_name);
 		if (ret == 0) {
@@ -335,8 +350,11 @@ static int coap_client_dtls_verify_peer_cert(coap_client_t * client,
 			return -1;
 		}
 	}
+
 	coap_log_info("Peer certificate validated");
+
 	gnutls_x509_crt_deinit(cert);
+
 	return 0;
 }
 
@@ -368,15 +386,16 @@ static int coap_client_dtls_create(coap_client_t * client,
 		coap_log_error("Failed to initialise DTLS library");
 		return -1;
 	}
+
 	ret = gnutls_certificate_allocate_credentials(&client->cred);
 	if (ret != GNUTLS_E_SUCCESS) {
 		gnutls_global_deinit();
 		coap_log_error("Failed to allocate DTLS credentials");
 		return -1;
 	}
+
 	if ((trust_file_name != NULL) && (strlen(trust_file_name) != 0)) {
-		ret =
-			gnutls_certificate_set_x509_trust_file(client->cred,
+		ret = gnutls_certificate_set_x509_trust_file(client->cred,
 												   trust_file_name,
 												   GNUTLS_X509_FMT_PEM);
 		if (ret == 0) {
@@ -387,9 +406,9 @@ static int coap_client_dtls_create(coap_client_t * client,
 			return -1;
 		}
 	}
+
 	if ((crl_file_name != NULL) && (strlen(crl_file_name) != 0)) {
-		ret =
-			gnutls_certificate_set_x509_crl_file(client->cred, crl_file_name,
+		ret = gnutls_certificate_set_x509_crl_file(client->cred, crl_file_name,
 												 GNUTLS_X509_FMT_PEM);
 		if (ret < 0) {
 			gnutls_certificate_free_credentials(client->cred);
@@ -399,8 +418,8 @@ static int coap_client_dtls_create(coap_client_t * client,
 			return -1;
 		}
 	}
-	ret =
-		gnutls_certificate_set_x509_key_file(client->cred, cert_file_name,
+
+	ret = gnutls_certificate_set_x509_key_file(client->cred, cert_file_name,
 											 key_file_name,
 											 GNUTLS_X509_FMT_PEM);
 	if (ret != GNUTLS_E_SUCCESS) {
@@ -410,8 +429,8 @@ static int coap_client_dtls_create(coap_client_t * client,
 			("Failed to assign X.509 certificate file and key file to DTLS credentials");
 		return -1;
 	}
-	ret =
-		gnutls_priority_init(&client->priority, COAP_CLIENT_DTLS_PRIORITIES,
+
+	ret = gnutls_priority_init(&client->priority, COAP_CLIENT_DTLS_PRIORITIES,
 							 NULL);
 	if (ret != GNUTLS_E_SUCCESS) {
 		gnutls_certificate_free_credentials(client->cred);
@@ -419,8 +438,8 @@ static int coap_client_dtls_create(coap_client_t * client,
 		coap_log_error("Failed to initialise priorities for DTLS session");
 		return -1;
 	}
-	ret =
-		gnutls_init(&client->session,
+
+	ret = gnutls_init(&client->session,
 					GNUTLS_CLIENT | GNUTLS_DATAGRAM | GNUTLS_NONBLOCK);
 	if (ret != GNUTLS_E_SUCCESS) {
 		gnutls_priority_deinit(client->priority);
@@ -429,8 +448,8 @@ static int coap_client_dtls_create(coap_client_t * client,
 		coap_log_error("Failed to initialise DTLS session");
 		return -1;
 	}
-	ret =
-		gnutls_credentials_set(client->session, GNUTLS_CRD_CERTIFICATE,
+
+	ret = gnutls_credentials_set(client->session, GNUTLS_CRD_CERTIFICATE,
 							   client->cred);
 	if (ret != GNUTLS_E_SUCCESS) {
 		gnutls_deinit(client->session);
@@ -440,6 +459,7 @@ static int coap_client_dtls_create(coap_client_t * client,
 		coap_log_error("Failed to assign credentials to DTLS session");
 		return -1;
 	}
+
 	ret = gnutls_priority_set(client->session, client->priority);
 	if (ret != GNUTLS_E_SUCCESS) {
 		gnutls_deinit(client->session);
@@ -449,6 +469,7 @@ static int coap_client_dtls_create(coap_client_t * client,
 		coap_log_error("Failed to assign priorities to DTLS session");
 		return -1;
 	}
+
 	gnutls_transport_set_ptr(client->session, client);
 	gnutls_transport_set_pull_function(client->session,
 									   coap_client_dtls_pull_func);
@@ -459,6 +480,7 @@ static int coap_client_dtls_create(coap_client_t * client,
 	gnutls_dtls_set_mtu(client->session, COAP_CLIENT_DTLS_MTU);
 	gnutls_dtls_set_timeouts(client->session, COAP_CLIENT_DTLS_RETRANS_TIMEOUT,
 							 COAP_CLIENT_DTLS_TOTAL_TIMEOUT);
+
 	ret = coap_client_dtls_handshake(client);
 	if (ret < 0) {
 		gnutls_deinit(client->session);
@@ -468,6 +490,7 @@ static int coap_client_dtls_create(coap_client_t * client,
 		coap_log_warn("Failed to complete DTLS handshake");
 		return ret;
 	}
+
 	ret = coap_client_dtls_verify_peer_cert(client, common_name);
 	if (ret < 0) {
 		gnutls_deinit(client->session);
@@ -476,6 +499,7 @@ static int coap_client_dtls_create(coap_client_t * client,
 		gnutls_global_deinit();
 		return ret;
 	}
+
 	return 0;
 }
 
@@ -521,7 +545,9 @@ int coap_client_create(coap_client_t * client,
 	if ((client == NULL) || (host == NULL) || (port == NULL)) {
 		return -EINVAL;
 	}
+
 	memset(client, 0, sizeof(coap_client_t));
+
 	/* resolve host and port */
 	hints.ai_flags = 0;
 	hints.ai_family = COAP_IPV_AF_INET;	/* preferred socket domain */
@@ -531,56 +557,65 @@ int coap_client_create(coap_client_t * client,
 	hints.ai_addr = NULL;		/* must be NULL */
 	hints.ai_canonname = NULL;	/* must be NULL */
 	hints.ai_next = NULL;		/* must be NULL */
+
 	ret = getaddrinfo(host, port, &hints, &list);
 	if (ret < 0) {
 		return -EBUSY;
 	}
+
 	for (node = list; node != NULL; node = node->ai_next) {
 		if ((node->ai_family == COAP_IPV_AF_INET)
 			&& (node->ai_socktype == SOCK_DGRAM)) {
-			client->sd =
-				socket(node->ai_family, node->ai_socktype, node->ai_protocol);
+			client->sd = socket(node->ai_family, node->ai_socktype, node->ai_protocol);
 			if (client->sd < 0) {
 				continue;
 			}
+
 			ret = connect(client->sd, node->ai_addr, node->ai_addrlen);
 			if (ret < 0) {
 				close(client->sd);
 				continue;
 			}
+
 			memcpy(&client->server_sin, node->ai_addr, node->ai_addrlen);
 			client->server_sin_len = node->ai_addrlen;
 			break;
 		}
 	}
+
 	freeaddrinfo(list);
+
 	if (node == NULL) {
 		memset(client, 0, sizeof(coap_client_t));
 		return -EBUSY;
 	}
+
 	flags = fcntl(client->sd, F_GETFL, 0);
 	if (flags < 0) {
 		close(client->sd);
 		memset(client, 0, sizeof(coap_client_t));
 		return -errno;
 	}
+
 	ret = fcntl(client->sd, F_SETFL, flags | O_NONBLOCK);
 	if (ret < 0) {
 		close(client->sd);
 		memset(client, 0, sizeof(coap_client_t));
 		return -errno;
 	}
+
 	strncpy(client->server_host, host, sizeof(client->server_host) - 1);
 	strncpy(client->server_port, port, sizeof(client->server_port) - 1);
+
 	client->timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);
 	if (client->timer_fd < 0) {
 		close(client->sd);
 		memset(client, 0, sizeof(coap_client_t));
 		return -errno;
 	}
+
 #ifdef COAP_DTLS_EN
-	ret =
-		coap_client_dtls_create(client, key_file_name, cert_file_name,
+	ret = coap_client_dtls_create(client, key_file_name, cert_file_name,
 								trust_file_name, crl_file_name, common_name);
 	if (ret < 0) {
 		close(client->timer_fd);
@@ -589,8 +624,10 @@ int coap_client_create(coap_client_t * client,
 		return ret;
 	}
 #endif
-	coap_log_notice("Connected to host %s and port %s", client->server_host,
-					client->server_port);
+
+	coap_log_notice("Connected to host %s and port %s",
+						client->server_host, client->server_port);
+
 	return 0;
 }
 
@@ -599,9 +636,12 @@ void coap_client_destroy(coap_client_t * client)
 #ifdef COAP_DTLS_EN
 	coap_client_dtls_destroy(client);
 #endif
+
 	close(client->timer_fd);
 	close(client->sd);
 	memset(client, 0, sizeof(coap_client_t));
+
+	return;
 }
 
 /**
@@ -622,8 +662,10 @@ static void coap_client_init_ack_timeout(coap_client_t * client)
 		srand(time(NULL));
 		rand_init = 1;
 	}
+
 	client->timeout.tv_sec = COAP_CLIENT_ACK_TIMEOUT_SEC;
 	client->timeout.tv_nsec = (rand() % 1000) * 1000000;
+
 	coap_log_debug("Acknowledgement timeout initialised to: %lu sec, %lu nsec",
 				   client->timeout.tv_sec, client->timeout.tv_nsec);
 }
@@ -639,6 +681,7 @@ static void coap_client_init_resp_timeout(coap_client_t * client)
 {
 	client->timeout.tv_sec = COAP_CLIENT_RESP_TIMEOUT_SEC;
 	client->timeout.tv_nsec = 0;
+
 	coap_log_debug("Response timeout initialised to: %lu sec, %lu nsec",
 				   client->timeout.tv_sec, client->timeout.tv_nsec);
 }
@@ -652,8 +695,10 @@ static void coap_client_double_timeout(coap_client_t * client)
 {
 	unsigned msec = 2 * ((client->timeout.tv_sec * 1000)
 						 + (client->timeout.tv_nsec / 1000000));
+
 	client->timeout.tv_sec = msec / 1000;
 	client->timeout.tv_nsec = (msec % 1000) * 1000000;
+
 	coap_log_debug("Timeout doubled to: %lu sec, %lu nsec",
 				   client->timeout.tv_sec, client->timeout.tv_nsec);
 }
@@ -677,6 +722,7 @@ static int coap_client_start_timer(coap_client_t * client)
 	if (ret < 0) {
 		return -errno;
 	}
+
 	return 0;
 }
 
@@ -692,7 +738,9 @@ static int coap_client_start_timer(coap_client_t * client)
 static int coap_client_start_ack_timer(coap_client_t * client)
 {
 	client->num_retrans = 0;
+
 	coap_client_init_ack_timeout(client);
+
 	return coap_client_start_timer(client);
 }
 
@@ -715,12 +763,16 @@ static int coap_client_update_ack_timer(coap_client_t * client)
 	if (client->num_retrans >= COAP_CLIENT_MAX_RETRANSMIT) {
 		return -ETIMEDOUT;
 	}
+
 	coap_client_double_timeout(client);
+
 	ret = coap_client_start_timer(client);
 	if (ret < 0) {
 		return ret;
 	}
+
 	client->num_retrans++;
+
 	return 0;
 }
 
@@ -736,6 +788,7 @@ static int coap_client_update_ack_timer(coap_client_t * client)
 static int coap_client_start_resp_timer(coap_client_t * client)
 {
 	coap_client_init_resp_timeout(client);
+
 	return coap_client_start_timer(client);
 }
 
@@ -758,6 +811,7 @@ static ssize_t coap_client_send(coap_client_t * client, coap_msg_t * msg)
 	if (num < 0) {
 		return num;
 	}
+
 #ifdef COAP_DTLS_EN
 	errno = 0;
 	num = gnutls_record_send(client->session, buf, num);
@@ -781,8 +835,10 @@ static ssize_t coap_client_send(coap_client_t * client, coap_msg_t * msg)
 		return -errno;
 	}
 #endif
-	coap_log_debug("Sent to host %s and port %s", client->server_host,
-				   client->server_port);
+
+	coap_log_debug("Sent to host %s and port %s",
+					client->server_host, client->server_port);
+
 	return num;
 }
 
@@ -809,16 +865,19 @@ static void coap_client_handle_format_error(coap_client_t * client, char *buf,
 	ret = coap_msg_parse_type_msg_id(buf, len, &type, &msg_id);
 	if ((ret == 0) && (type == COAP_MSG_CON)) {
 		coap_msg_create(&msg);
+
 		ret = coap_msg_set_type(&msg, COAP_MSG_RST);
 		if (ret < 0) {
 			coap_msg_destroy(&msg);
 			return;
 		}
+
 		ret = coap_msg_set_msg_id(&msg, msg_id);
 		if (ret < 0) {
 			coap_msg_destroy(&msg);
 			return;
 		}
+
 		coap_client_send(client, &msg);
 		coap_msg_destroy(&msg);
 	}
@@ -863,6 +922,7 @@ static ssize_t coap_client_recv(coap_client_t * client, coap_msg_t * msg)
 		return -errno;
 	}
 #endif
+
 	ret = coap_msg_parse(msg, buf, num);
 	if (ret < 0) {
 		if (ret == -EBADMSG) {
@@ -870,8 +930,10 @@ static ssize_t coap_client_recv(coap_client_t * client, coap_msg_t * msg)
 		}
 		return ret;
 	}
-	coap_log_debug("Received from host %s and port %s", client->server_host,
-				   client->server_port);
+
+	coap_log_debug("Received from host %s and port %s",
+					client->server_host, client->server_port);
+
 	return num;
 }
 
@@ -895,22 +957,29 @@ static int coap_client_reject_con(coap_client_t * client, coap_msg_t * msg)
 
 	coap_log_info("Rejecting confirmable message from host %s and port %s",
 				  client->server_host, client->server_port);
+
 	coap_msg_create(&rej);
+
 	ret = coap_msg_set_type(&rej, COAP_MSG_RST);
 	if (ret < 0) {
 		coap_msg_destroy(&rej);
 		return ret;
 	}
+
 	ret = coap_msg_set_msg_id(&rej, coap_msg_get_msg_id(msg));
 	if (ret < 0) {
 		coap_msg_destroy(&rej);
 		return ret;
 	}
+
 	num = coap_client_send(client, &rej);
+
 	coap_msg_destroy(&rej);
+
 	if (num < 0) {
 		return num;
 	}
+
 	return 0;
 }
 
@@ -983,6 +1052,7 @@ static int coap_client_reject(coap_client_t * client, coap_msg_t * msg)
 	} else if (coap_msg_get_type(msg) == COAP_MSG_RST) {
 		return coap_client_reject_reset(client, msg);
 	}
+
 	return 0;					/* should never arrive here */
 }
 
@@ -1004,22 +1074,29 @@ static int coap_client_send_ack(coap_client_t * client, coap_msg_t * msg)
 
 	coap_log_info("Acknowledging confirmable message from host %s and port %s",
 				  client->server_host, client->server_port);
+
 	coap_msg_create(&ack);
+
 	ret = coap_msg_set_type(&ack, COAP_MSG_ACK);
 	if (ret < 0) {
 		coap_msg_destroy(&ack);
 		return ret;
 	}
+
 	ret = coap_msg_set_msg_id(&ack, coap_msg_get_msg_id(msg));
 	if (ret < 0) {
 		coap_msg_destroy(&ack);
 		return ret;
 	}
+
 	num = coap_client_send(client, &ack);
+
 	coap_msg_destroy(&ack);
+
 	if (num < 0) {
 		return num;
 	}
+
 	return 0;
 }
 
@@ -1045,6 +1122,7 @@ static int coap_client_handle_ack_timeout(coap_client_t * client,
 
 	coap_log_debug("Transaction expired for host %s and port %s",
 				   client->server_host, client->server_port);
+
 	ret = coap_client_update_ack_timer(client);
 	if (ret == 0) {
 		coap_log_debug("Retransmitting to host %s and port %s",
@@ -1059,6 +1137,7 @@ static int coap_client_handle_ack_timeout(coap_client_t * client,
 		coap_log_info("No acknowledgement received from host %s and port %s",
 					  client->server_host, client->server_port);
 	}
+
 	return ret;
 }
 
@@ -1082,17 +1161,22 @@ static int coap_client_listen_ack(coap_client_t * client, coap_msg_t * msg)
 		FD_ZERO(&read_fds);
 		FD_SET(client->sd, &read_fds);
 		FD_SET(client->timer_fd, &read_fds);
+
 		max_fd = client->sd;
+
 		if (client->timer_fd > max_fd) {
 			max_fd = client->timer_fd;
 		}
+
 		ret = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
 		if (ret < 0) {
 			return -errno;
 		}
+
 		if (FD_ISSET(client->sd, &read_fds)) {
 			return 0;
 		}
+
 		if (FD_ISSET(client->timer_fd, &read_fds)) {
 			ret = coap_client_handle_ack_timeout(client, msg);
 			if (ret < 0) {
@@ -1100,6 +1184,7 @@ static int coap_client_listen_ack(coap_client_t * client, coap_msg_t * msg)
 			}
 		}
 	}
+
 	return 0;
 }
 
@@ -1122,21 +1207,27 @@ static int coap_client_listen_resp(coap_client_t * client)
 		FD_ZERO(&read_fds);
 		FD_SET(client->sd, &read_fds);
 		FD_SET(client->timer_fd, &read_fds);
+
 		max_fd = client->sd;
+
 		if (client->timer_fd > max_fd) {
 			max_fd = client->timer_fd;
 		}
+
 		ret = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
 		if (ret < 0) {
 			return -errno;
 		}
+
 		if (FD_ISSET(client->sd, &read_fds)) {
 			break;
 		}
+
 		if (FD_ISSET(client->timer_fd, &read_fds)) {
 			return -ETIMEDOUT;
 		}
 	}
+
 	return 0;
 }
 
@@ -1153,10 +1244,7 @@ static int coap_client_listen_resp(coap_client_t * client)
 static int coap_client_match_token(coap_msg_t * req, coap_msg_t * resp)
 {
 	return ((coap_msg_get_token_len(resp) == coap_msg_get_token_len(req))
-			&&
-			(memcmp
-			 (coap_msg_get_token(resp), coap_msg_get_token(req),
-			  coap_msg_get_token_len(req)) == 0));
+			&& (memcmp(coap_msg_get_token(resp), coap_msg_get_token(req), coap_msg_get_token_len(req)) == 0));
 }
 
 /**
@@ -1201,15 +1289,17 @@ static int coap_client_handle_piggybacked_response(coap_client_t * client,
 
 	op_num = coap_client_check_options(resp);
 	if (op_num != 0) {
-		coap_log_info
-			("Found bad option number %u in message from host %s and port %s",
-			 op_num, client->server_host, client->server_port);
+		coap_log_info("Found bad option number %u in message from host %s and port %s",
+			 			op_num, client->server_host, client->server_port);
+
 		coap_client_reject(client, resp);
+
 		return -EBADMSG;
 	}
-	coap_log_info
-		("Received acknowledgement and response from host %s and port %s",
-		 client->server_host, client->server_port);
+
+	coap_log_info("Received acknowledgement and response from host %s and port %s",
+		 			client->server_host, client->server_port);
+
 	return 0;
 }
 
@@ -1237,28 +1327,28 @@ static int coap_client_handle_sep_response(coap_client_t * client,
 					  client->server_host, client->server_port);
 		op_num = coap_client_check_options(resp);
 		if (op_num != 0) {
-			coap_log_info
-				("Found bad option number %u in message from host %s and port %s",
+			coap_log_info("Found bad option number %u in message from host %s and port %s",
 				 op_num, client->server_host, client->server_port);
 			coap_client_reject(client, resp);
 			return -EBADMSG;
 		}
+
 		return coap_client_send_ack(client, resp);
 	} else if (coap_msg_get_type(resp) == COAP_MSG_NON) {
-		coap_log_info
-			("Received non-confirmable response from host %s and port %s",
+		coap_log_info("Received non-confirmable response from host %s and port %s",
 			 client->server_host, client->server_port);
 		op_num = coap_client_check_options(resp);
 		if (op_num != 0) {
-			coap_log_info
-				("Found bad option number %u in message from host %s and port %s",
+			coap_log_info("Found bad option number %u in message from host %s and port %s",
 				 op_num, client->server_host, client->server_port);
 			coap_client_reject(client, resp);
 			return -EBADMSG;
 		}
 		return 0;
 	}
+
 	coap_client_reject(client, resp);
+
 	return -EBADMSG;
 }
 
@@ -1285,21 +1375,24 @@ static int coap_client_exchange_sep(coap_client_t * client, coap_msg_t * req,
 	/* wait for a separate response to a confirmable request */
 	coap_log_info("Expecting response from host %s and port %s",
 				  client->server_host, client->server_port);
+
 	coap_client_start_resp_timer(client);
+
 	while (1) {
 		ret = coap_client_listen_resp(client);
 		if (ret < 0) {
 			return ret;
 		}
+
 		num = coap_client_recv(client, resp);
 		if (num < 0) {
 			return num;
 		}
+
 		if (coap_msg_get_msg_id(resp) == coap_msg_get_msg_id(req)) {
 			if (coap_msg_get_type(resp) == COAP_MSG_ACK) {
 				/* message deduplication */
-				coap_log_info
-					("Received duplicate acknowledgement from host %s and port %s",
+				coap_log_info("Received duplicate acknowledgement from host %s and port %s",
 					 client->server_host, client->server_port);
 				continue;
 			} else if (coap_msg_get_type(resp) == COAP_MSG_RST) {
@@ -1308,9 +1401,11 @@ static int coap_client_exchange_sep(coap_client_t * client, coap_msg_t * req,
 			coap_client_reject(client, resp);
 			return -EBADMSG;
 		}
+
 		if (coap_client_match_token(req, resp)) {
 			return coap_client_handle_sep_response(client, resp);
 		}
+
 		/* message deduplication */
 		/* we might have received a duplicate message that was already received from the same server */
 		/* reject the message and continue listening */
@@ -1319,6 +1414,7 @@ static int coap_client_exchange_sep(coap_client_t * client, coap_msg_t * req,
 			return ret;
 		}
 	}
+
 	return 0;
 }
 
@@ -1348,16 +1444,20 @@ static int coap_client_exchange_con(coap_client_t * client, coap_msg_t * req,
 	 */
 	coap_log_info("Expecting acknowledgement from host %s and port %s",
 				  client->server_host, client->server_port);
+
 	coap_client_start_ack_timer(client);
+
 	while (1) {
 		ret = coap_client_listen_ack(client, req);
 		if (ret < 0) {
 			return ret;
 		}
+
 		num = coap_client_recv(client, resp);
 		if (num < 0) {
 			return num;
 		}
+
 		if (coap_msg_get_msg_id(resp) == coap_msg_get_msg_id(req)) {
 			if (coap_msg_get_type(resp) == COAP_MSG_ACK) {
 				if (coap_msg_is_empty(resp)) {
@@ -1385,6 +1485,7 @@ static int coap_client_exchange_con(coap_client_t * client, coap_msg_t * req,
 			 */
 			return coap_client_handle_sep_response(client, resp);
 		}
+
 		/* message deduplication */
 		/* we might have received a duplicate message that was already received from the same server */
 		/* reject the message and continue listening */
@@ -1393,6 +1494,7 @@ static int coap_client_exchange_con(coap_client_t * client, coap_msg_t * req,
 			return ret;
 		}
 	}
+
 	return 0;
 }
 
@@ -1446,6 +1548,7 @@ static int coap_client_exchange_non(coap_client_t * client, coap_msg_t * req,
 			return ret;
 		}
 	}
+
 	return 0;
 }
 
@@ -1498,5 +1601,8 @@ int coap_client_exchange(coap_client_t * client, coap_msg_t * req,
 	} else if (coap_msg_get_type(req) == COAP_MSG_NON) {
 		return coap_client_exchange_non(client, req, resp);
 	}
+
 	return -EINVAL;
 }
+
+

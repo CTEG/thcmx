@@ -37,6 +37,7 @@
 #include <string.h>         /* size_t */
 #include <unistd.h>         /* ssize_t */
 #include <gnutls/gnutls.h>  /* gnutls_session_t */
+
 #include "sock.h"           /* error codes */
 #include "tls.h"            /* tls_init() */
 
@@ -59,30 +60,26 @@
 
 typedef enum {TLS_SOCK_CLIENT = 0, TLS_SOCK_SERVER} tls_sock_type_t;
 
-typedef struct
-{
+typedef struct {
     tls_sock_type_t type;
-    union
-    {
+
+    union {
         tls_client_t *client;
         tls_server_t *server;
-    }
-    u;
+    } u;
+    
     int sd;
     int timeout;
     sock_sockaddr_in_t sin;  /* remote address and port */
     gnutls_session_t session;
-}
-tls_sock_t;
+} tls_sock_t;
 
-typedef struct
-{
+typedef struct {
     tls_server_t *server;
     int sd;
     int timeout;
     sock_sockaddr_in_t sin;  /* local address and port */
-}
-tls_ssock_t;
+} tls_ssock_t;
 
 int tls_sock_open_from_sockaddr_in(tls_sock_t *s, tls_client_t *client, const char *common_name, int timeout, sock_sockaddr_in_t *sin);
 int tls_sock_open(tls_sock_t *s, tls_client_t *client, const char *host, const char *port, const char *common_name, int timeout);

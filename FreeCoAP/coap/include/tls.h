@@ -36,6 +36,7 @@
 
 #include <stddef.h>         /* size_t */
 #include <gnutls/gnutls.h>
+
 #include "sock.h"           /* error codes */
 #include "lock.h"           /* lock_t */
 
@@ -51,58 +52,46 @@
 #define tls_client_get_cred(client)  ((client)->cred)
 #define tls_server_get_cred(server)  ((server)->cred)
 
-typedef struct
-{
+typedef struct {
     char addr[SOCK_INET_ADDRSTRLEN];
     unsigned char session_data[TLS_CLIENT_MAX_SESSION_DATA_SIZE];
     size_t session_data_size;
-}
-tls_client_cache_element_t;
+} tls_client_cache_element_t;
 
-typedef struct
-{
+typedef struct {
     tls_client_cache_element_t *element;
     size_t size;
     unsigned index;
-}
-tls_client_cache_t;
+} tls_client_cache_t;
 
-typedef struct
-{
+typedef struct {
     gnutls_certificate_credentials_t cred;
 #ifdef TLS_CLIENT_AUTH
     gnutls_dh_params_t dh_params;
 #endif
     tls_client_cache_t cache;
     lock_t lock;
-}
-tls_client_t;
+} tls_client_t;
 
-typedef struct
-{
+typedef struct {
     unsigned char session_id[TLS_SERVER_MAX_SESSION_ID_SIZE];
     unsigned char session_data[TLS_SERVER_MAX_SESSION_DATA_SIZE];
     size_t session_id_size;
     size_t session_data_size;
-}
-tls_server_cache_element_t;
+} tls_server_cache_element_t;
 
-typedef struct
-{
+typedef struct {
     tls_server_cache_element_t *element;
     size_t size;
     unsigned index;
-}
-tls_server_cache_t;
+} tls_server_cache_t;
 
-typedef struct
-{
+typedef struct {
     gnutls_certificate_credentials_t cred;
     gnutls_dh_params_t dh_params;
     tls_server_cache_t cache;
     lock_t lock;
-}
-tls_server_t;
+} tls_server_t;
 
 int tls_init(void);
 void tls_deinit(void);
