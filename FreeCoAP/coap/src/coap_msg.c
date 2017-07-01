@@ -1083,6 +1083,7 @@ int coap_msg_copy(coap_msg_t *dst, coap_msg_t *src)
 		if (ret < 0) {
 			return ret;
 		}
+		
 		op = coap_msg_op_get_next(op);
 	}
 

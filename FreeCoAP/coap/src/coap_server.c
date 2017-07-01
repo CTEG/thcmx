@@ -1608,6 +1608,7 @@ static coap_server_trans_t *coap_server_find_trans(coap_server_t * server,
 			return trans;
 		}
 	}
+	
 	return NULL;
 }
 
@@ -1631,6 +1632,7 @@ static coap_server_trans_t *coap_server_find_empty_trans(coap_server_t * server)
 			return trans;
 		}
 	}
+
 	return NULL;
 }
 
@@ -1715,6 +1717,7 @@ static int coap_server_listen(coap_server_t * server)
 			}
 		}
 	}
+
 	return 0;
 }
 
@@ -2087,6 +2090,7 @@ static int coap_server_exchange(coap_server_t * server)
 
 	coap_msg_destroy(&send_msg);
 	coap_msg_destroy(&recv_msg);
+
 	return 0;
 }
 
@@ -2099,6 +2103,7 @@ int coap_server_run(coap_server_t * server)
 		if (ret < 0) {
 			return ret;
 		}
+
 		ret = coap_server_exchange(server);
 		if (ret < 0) {
 			if ((ret == -ETIMEDOUT) || (ret == -ECONNRESET)) {
@@ -2108,5 +2113,8 @@ int coap_server_run(coap_server_t * server)
 			}
 		}
 	}
+
 	return 0;
 }
+
+

@@ -874,6 +874,7 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
     printf("code_class:  %d\n", coap_msg_get_code_class(msg));
     printf("code_detail: %d\n", coap_msg_get_code_detail(msg));
     printf("msg_id:      0x%04x\n", coap_msg_get_msg_id(msg));
+
     printf("token:      ");
     token = coap_msg_get_token(msg);
     for (i = 0; i < coap_msg_get_token_len(msg); i++) {
@@ -886,13 +887,16 @@ static void print_coap_msg(const char *str, coap_msg_t *msg)
         num = coap_msg_op_get_num(op);
         len = coap_msg_op_get_len(op);
         val = coap_msg_op_get_val(op);
+
         printf("op[%u].num:   %u\n", j, num);
         printf("op[%u].len:   %u\n", j, len);
+        
         printf("op[%u].val:  ", j);
         for (i = 0; i < len; i++) {
             printf(" 0x%02x", (unsigned char)val[i]);
         }
         printf("\n");
+
         op = coap_msg_op_get_next(op);
         j++;
     }
