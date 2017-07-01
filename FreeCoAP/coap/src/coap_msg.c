@@ -31,12 +31,12 @@
  *  @brief Source file for the FreeCoAP message parser/formatter library
  */
 
+#include <arpa/inet.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <time.h>
 #include <errno.h>
-#include <arpa/inet.h>
 
 #include "coap_msg.h"
 
@@ -58,9 +58,12 @@ void coap_msg_gen_rand_str(char *buf, size_t len)
 		srand(time(NULL));
 		coap_msg_rand_init = 1;
 	}
+
 	for (i = 0; i < len; i++) {
 		buf[i] = rand() & 0x000000ff;
 	}
+
+	return;
 }
 
 int coap_msg_op_num_is_recognized(unsigned num)
@@ -99,12 +102,14 @@ int coap_msg_op_parse_block_val(unsigned *num, unsigned *more, unsigned *size,
 		*more = ! !(val[0] & 0x08);
 		*num = ((unsigned)(unsigned char)val[0] & 0x000000f0) >> 4;
 		break;
+
 	case 2:
 		*size = 1 << ((val[1] & 0x07) + 4);
 		*more = ! !(val[1] & 0x08);
 		*num = ((unsigned)(unsigned char)val[0] << 4)
 			| (((unsigned)(unsigned char)val[1] & 0x000000f0) >> 4);
 		break;
+
 	default:
 		*size = 1 << ((val[2] & 0x07) + 4);
 		*more = ! !(val[2] & 0x08);
@@ -112,9 +117,11 @@ int coap_msg_op_parse_block_val(unsigned *num, unsigned *more, unsigned *size,
 			| ((unsigned)(unsigned char)val[1] << 4)
 			| (((unsigned)(unsigned char)val[2] & 0x000000f0) >> 4);
 	}
+
 	if (*size > COAP_MSG_OP_MAX_BLOCK_SIZE) {
 		return -EINVAL;
 	}
+
 	return 0;
 }
 
@@ -127,24 +134,31 @@ int coap_msg_op_format_block_val(char *val, unsigned len, unsigned num,
 	case (1 << 4):
 		szx = 0;
 		break;
+
 	case (1 << 5):
 		szx = 1;
 		break;
+
 	case (1 << 6):
 		szx = 2;
 		break;
+
 	case (1 << 7):
 		szx = 3;
 		break;
+
 	case (1 << 8):
 		szx = 4;
 		break;
+
 	case (1 << 9):
 		szx = 5;
 		break;
+
 	case (1 << 10):
 		szx = 6;
 		break;
+
 	default:
 		return -EINVAL;
 	}
@@ -158,6 +172,7 @@ int coap_msg_op_format_block_val(char *val, unsigned len, unsigned num,
 		val[0] |= (! !more) << 3;
 		val[0] |= szx;
 		return 1;
+
 	case 2:
 		if (num > (1 << 12)) {
 			return -EINVAL;
@@ -167,6 +182,7 @@ int coap_msg_op_format_block_val(char *val, unsigned len, unsigned num,
 		val[1] |= (! !more) << 3;
 		val[1] |= szx;
 		return 2;
+
 	case 3:
 		if (num > (1 << 20)) {
 			return -EINVAL;
@@ -178,6 +194,7 @@ int coap_msg_op_format_block_val(char *val, unsigned len, unsigned num,
 		val[2] |= szx;
 		return 3;
 	}
+
 	return -EINVAL;
 }
 
@@ -200,6 +217,7 @@ static coap_msg_op_t *coap_msg_op_new(unsigned num, unsigned len,
 	if (op == NULL) {
 		return NULL;
 	}
+
 	op->num = num;
 	op->len = len;
 	op->val = (char *)malloc(len);
@@ -207,8 +225,10 @@ static coap_msg_op_t *coap_msg_op_new(unsigned num, unsigned len,
 		free(op);
 		return NULL;
 	}
+
 	memcpy(op->val, val, len);
 	op->next = NULL;
+
 	return op;
 }
 
@@ -244,11 +264,13 @@ static void coap_msg_op_list_destroy(coap_msg_op_list_t * list)
 	coap_msg_op_t *op = NULL;
 
 	op = list->first;
+
 	while (op != NULL) {
 		prev = op;
 		op = op->next;
 		coap_msg_op_delete(prev);
 	}
+
 	memset(list, 0, sizeof(coap_msg_op_list_t));
 }
 
@@ -273,6 +295,7 @@ static int coap_msg_op_list_add_last(coap_msg_op_list_t * list, unsigned num,
 	if (op == NULL) {
 		return -ENOMEM;
 	}
+
 	if (list->first == NULL) {
 		list->first = op;
 		list->last = op;
@@ -280,6 +303,7 @@ static int coap_msg_op_list_add_last(coap_msg_op_list_t * list, unsigned num,
 		list->last->next = op;
 		list->last = op;
 	}
+
 	return 0;
 }
 
@@ -307,19 +331,23 @@ static int coap_msg_op_list_add(coap_msg_op_list_t * list, unsigned num,
 	if (op == NULL) {
 		return -ENOMEM;
 	}
+
 	if (list->first == NULL) {
 		/* empty list */
 		list->first = op;
 		list->last = op;
 		return 0;
 	}
+
 	if (op->num < list->first->num) {
 		/* start of the list */
 		op->next = list->first;
 		list->first = op;
 		return 0;
 	}
+
 	prev = list->first;
+
 	while (prev != list->last) {
 		/* middle of the list */
 		if ((prev->num <= op->num) && (op->num < prev->next->num)) {
@@ -329,9 +357,11 @@ static int coap_msg_op_list_add(coap_msg_op_list_t * list, unsigned num,
 		}
 		prev = prev->next;
 	}
+
 	/* end of the list */
 	list->last->next = op;
 	list->last = op;
+
 	return 0;
 }
 
@@ -394,6 +424,7 @@ static int coap_msg_check(coap_msg_t * msg)
 			return -EBADMSG;
 		}
 	}
+
 	return 0;
 }
 
@@ -411,6 +442,7 @@ unsigned coap_msg_check_critical_ops(coap_msg_t * msg)
 		}
 		op = coap_msg_op_get_next(op);
 	}
+
 	return 0;					/* pass */
 }
 
@@ -428,6 +460,7 @@ unsigned coap_msg_check_unsafe_ops(coap_msg_t * msg)
 		}
 		op = coap_msg_op_get_next(op);
 	}
+
 	return 0;					/* pass */
 }
 
@@ -439,6 +472,7 @@ int coap_msg_parse_type_msg_id(char *buf, size_t len, unsigned *type,
 	}
 	*type = (buf[0] >> 4) & 0x03;
 	*msg_id = ntohs(*((uint16_t *) (&buf[2])));
+
 	return 0;
 }
 
@@ -477,9 +511,11 @@ static ssize_t coap_msg_parse_hdr(coap_msg_t * msg, char *buf, size_t len)
 		&& (msg->code_class != COAP_MSG_SERVER_ERR)) {
 		return -EBADMSG;
 	}
+
 	msg->msg_id = ntohs(*((uint16_t *) (&p[2])));
 	p += 4;
 	len -= 4;
+
 	return p - buf;
 }
 
@@ -499,7 +535,9 @@ static ssize_t coap_msg_parse_token(coap_msg_t * msg, char *buf, size_t len)
 	if (len < msg->token_len) {
 		return -EBADMSG;
 	}
+
 	memcpy(msg->token, buf, msg->token_len);
+
 	return msg->token_len;
 }
 
@@ -577,6 +615,7 @@ static ssize_t coap_msg_parse_op(coap_msg_t * msg, char *buf, size_t len)
 		return ret;
 	}
 	p += op_len;
+
 	return p - buf;
 }
 
@@ -607,6 +646,7 @@ static ssize_t coap_msg_parse_ops(coap_msg_t * msg, char *buf, size_t len)
 		p += num;
 		len -= num;
 	}
+
 	return p - buf;
 }
 
@@ -643,6 +683,7 @@ static ssize_t coap_msg_parse_payload(coap_msg_t * msg, char *buf, size_t len)
 	memcpy(msg->payload, p, len);
 	msg->payload_len = len;
 	p += len;
+
 	return p - buf;
 }
 
@@ -671,6 +712,7 @@ ssize_t coap_msg_parse(coap_msg_t * msg, char *buf, size_t len)
 		coap_msg_destroy(msg);
 		return num;
 	}
+
 	p += num;
 	len -= num;
 	num = coap_msg_parse_payload(msg, p, len);
@@ -678,6 +720,7 @@ ssize_t coap_msg_parse(coap_msg_t * msg, char *buf, size_t len)
 		coap_msg_destroy(msg);
 		return num;
 	}
+
 	return coap_msg_check(msg);
 }
 
@@ -689,7 +732,9 @@ int coap_msg_set_type(coap_msg_t * msg, unsigned type)
 		&& (type != COAP_MSG_RST)) {
 		return -EINVAL;
 	}
+
 	msg->type = type;
+
 	return 0;
 }
 
@@ -699,11 +744,14 @@ int coap_msg_set_code(coap_msg_t * msg, unsigned code_class,
 	if (code_class > COAP_MSG_MAX_CODE_CLASS) {
 		return -EINVAL;
 	}
+
 	if (code_detail > COAP_MSG_MAX_CODE_DETAIL) {
 		return -EINVAL;
 	}
+
 	msg->code_class = code_class;
 	msg->code_detail = code_detail;
+
 	return 0;
 }
 
@@ -712,7 +760,9 @@ int coap_msg_set_msg_id(coap_msg_t * msg, unsigned msg_id)
 	if (msg_id > COAP_MSG_MAX_MSG_ID) {
 		return -EINVAL;
 	}
+
 	msg->msg_id = msg_id;
+
 	return 0;
 }
 
@@ -721,8 +771,10 @@ int coap_msg_set_token(coap_msg_t * msg, char *buf, size_t len)
 	if (len > COAP_MSG_MAX_TOKEN_LEN) {
 		return -EINVAL;
 	}
+
 	memcpy(msg->token, buf, len);
 	msg->token_len = len;
+
 	return 0;
 }
 
@@ -739,6 +791,7 @@ int coap_msg_set_payload(coap_msg_t * msg, char *buf, size_t len)
 		free(msg->payload);
 		msg->payload = NULL;
 	}
+
 	if (len > 0) {
 		msg->payload = (char *)malloc(len);
 		if (msg->payload == NULL) {
@@ -747,6 +800,7 @@ int coap_msg_set_payload(coap_msg_t * msg, char *buf, size_t len)
 		memcpy(msg->payload, buf, len);
 		msg->payload_len = len;
 	}
+
 	return 0;
 }
 
@@ -768,6 +822,7 @@ static ssize_t coap_msg_format_hdr(coap_msg_t * msg, char *buf, size_t len)
 	if (len < 4) {
 		return -ENOSPC;
 	}
+
 	buf[0] = (char)((COAP_MSG_VER << 6)
 					| ((msg->type & 0x03) << 4)
 					| (msg->token_len & 0x0f));
@@ -775,6 +830,7 @@ static ssize_t coap_msg_format_hdr(coap_msg_t * msg, char *buf, size_t len)
 					| (msg->code_detail & 0x1f));
 	msg_id = htons(msg->msg_id);
 	memcpy(&buf[2], &msg_id, 2);
+
 	return 4;
 }
 
@@ -794,7 +850,9 @@ static ssize_t coap_msg_format_token(coap_msg_t * msg, char *buf, size_t len)
 	if (len < msg->token_len) {
 		return -ENOSPC;
 	}
+
 	memcpy(buf, msg->token, msg->token_len);
+
 	return msg->token_len;
 }
 
@@ -916,11 +974,13 @@ static ssize_t coap_msg_format_ops(coap_msg_t * msg, char *buf, size_t len)
 		if (num < 0) {
 			return num;
 		}
+
 		p += num;
 		len -= num;
 		prev_num = coap_msg_op_get_num(op);
 		op = coap_msg_op_get_next(op);
 	}
+
 	return p - buf;
 }
 
@@ -940,11 +1000,14 @@ static ssize_t coap_msg_format_payload(coap_msg_t * msg, char *buf, size_t len)
 	if (msg->payload_len == 0) {
 		return 0;
 	}
+
 	if (msg->payload_len + 1 > len) {
 		return -ENOSPC;
 	}
+
 	buf[0] = 0xff;
 	memcpy(&buf[1], msg->payload, msg->payload_len);
+
 	return msg->payload_len + 1;
 }
 
@@ -981,6 +1044,7 @@ ssize_t coap_msg_format(coap_msg_t * msg, char *buf, size_t len)
 		return num;
 	}
 	p += num;
+
 	return p - buf;
 }
 

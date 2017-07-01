@@ -31,67 +31,67 @@
  *  @brief Source file for the FreeCoAP message parser/formatter unit tests
  */
 
+#include <arpa/inet.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
 
 #include "coap_msg.h"
 #include "coap_log.h"
 #include "test.h"
 
 #undef DEBUG
-#define DIM(x) (sizeof(x) / sizeof(x[0]))                                       /**< Calculate the size of an array */
+#define DIM(x) (sizeof(x) / sizeof(x[0]))               /**< Calculate the size of an array */
 
 /**
  *  @brief Message option test data structure
  */
 typedef struct {
-    unsigned num;                                                               /**< Option number */
-    unsigned len;                                                               /**< Option length */
-    char *val;                                                                  /**< Pointer to a buffer containing the option value */
-    unsigned block_num;                                                         /**< Block number for Block1 or Block2 option */
-    unsigned block_more;                                                        /**< More value for Block1 or Block2 option */
-    unsigned block_size;                                                        /**< Block size (in bytes) for Block1 or Block2 option */
+    unsigned num;                           /**< Option number */
+    unsigned len;                           /**< Option length */
+    char *val;                              /**< Pointer to a buffer containing the option value */
+    unsigned block_num;                     /**< Block number for Block1 or Block2 option */
+    unsigned block_more;                    /**< More value for Block1 or Block2 option */
+    unsigned block_size;                    /**< Block size (in bytes) for Block1 or Block2 option */
 } test_coap_msg_op_t;
 
 /**
  *  @brief Message test data structure
  */
 typedef struct {
-    const char *parse_desc;                                                     /**< Test description for the parse test */
-    const char *format_desc;                                                    /**< Test description for the format test */
-    const char *copy_desc;                                                      /**< Test description for the copy test */
-    const char *recognize_desc;                                                 /**< Test description for the recognize test */
-    const char *check_critical_desc;                                            /**< Test description for the check critical options test */
-    const char *check_unsafe_desc;                                              /**< Test description for the check unsafe options test */
-    ssize_t parse_ret;                                                          /**< Expected return value for the parse function */
-    int set_type_ret;                                                           /**< Expected return value for the set type function */
-    int set_code_ret;                                                           /**< Expected return value for the set code function */
-    int set_msg_id_ret;                                                         /**< Expected return value for the set message ID function */
-    int set_token_ret;                                                          /**< Expected return value for the set token function */
-    int *add_op_ret;                                                            /**< Expected return value for the add option function */
-    int set_payload_ret;                                                        /**< Expected return value for the set payload function */
-    ssize_t format_ret;                                                         /**< Expected return value for the format function */
-    int copy_ret;                                                               /**< Expected return value for the copy function */
-    int *recognize_ret;                                                         /**< Expected return value for the recognize function */
-    unsigned check_critical_ops_ret;                                            /**< Expected return value for the check critical options function */
-    unsigned check_unsafe_ops_ret;                                              /**< Expected return value for the check unsafe options function */
-    char *buf;                                                                  /**< Buffer containing a message */
-    size_t buf_len;                                                             /**< Length of the buffer containing a message */
-    unsigned ver;                                                               /**< CoAP version */
-    coap_msg_type_t type;                                                       /**< Message type */
-    unsigned code_class;                                                        /**< Message code class */
-    unsigned code_detail;                                                       /**< Message code detail */
-    unsigned msg_id;                                                            /**< Message ID */
-    char *token;                                                                /**< Buffer containing a token */
-    size_t token_len;                                                           /**< Length of the buffer containing a token */
-    test_coap_msg_op_t *ops;                                                    /**< Array of message option test data structures */
-    unsigned num_ops;                                                           /**< Size of the array of message option test data structures */
-    char *payload;                                                              /**< Buffer containing a payload */
-    size_t payload_len;                                                         /**< Length of the buffer containing a payload */
+    const char *parse_desc;             /**< Test description for the parse test */
+    const char *format_desc;            /**< Test description for the format test */
+    const char *copy_desc;              /**< Test description for the copy test */
+    const char *recognize_desc;         /**< Test description for the recognize test */
+    const char *check_critical_desc;    /**< Test description for the check critical options test */
+    const char *check_unsafe_desc;      /**< Test description for the check unsafe options test */
+    ssize_t parse_ret;                  /**< Expected return value for the parse function */
+    int set_type_ret;                   /**< Expected return value for the set type function */
+    int set_code_ret;                   /**< Expected return value for the set code function */
+    int set_msg_id_ret;                 /**< Expected return value for the set message ID function */
+    int set_token_ret;                  /**< Expected return value for the set token function */
+    int *add_op_ret;                    /**< Expected return value for the add option function */
+    int set_payload_ret;                /**< Expected return value for the set payload function */
+    ssize_t format_ret;                 /**< Expected return value for the format function */
+    int copy_ret;                       /**< Expected return value for the copy function */
+    int *recognize_ret;                 /**< Expected return value for the recognize function */
+    unsigned check_critical_ops_ret;    /**< Expected return value for the check critical options function */
+    unsigned check_unsafe_ops_ret;      /**< Expected return value for the check unsafe options function */
+    char *buf;                          /**< Buffer containing a message */
+    size_t buf_len;                     /**< Length of the buffer containing a message */
+    unsigned ver;                       /**< CoAP version */
+    coap_msg_type_t type;               /**< Message type */
+    unsigned code_class;                /**< Message code class */
+    unsigned code_detail;               /**< Message code detail */
+    unsigned msg_id;                    /**< Message ID */
+    char *token;                        /**< Buffer containing a token */
+    size_t token_len;                   /**< Length of the buffer containing a token */
+    test_coap_msg_op_t *ops;            /**< Array of message option test data structures */
+    unsigned num_ops;                   /**< Size of the array of message option test data structures */
+    char *payload;                      /**< Buffer containing a payload */
+    size_t payload_len;                 /**< Length of the buffer containing a payload */
 } test_coap_msg_data_t;
 
 #define TEST1_BUF_LEN      (4 + 8 + 5 + 9 + 1 + 16)
@@ -3993,89 +3993,85 @@ static test_result_t test_parse_func(test_data_t data)
 
     coap_msg_create(&msg);
     num = coap_msg_parse(&msg, test_data->buf, test_data->buf_len);
-    if (num != test_data->parse_ret)
-    {
+    if (num != test_data->parse_ret) {
         result = FAIL;
     }
-    if (test_data->parse_ret != 0)
-    {
+
+    if (test_data->parse_ret != 0) {
         coap_msg_destroy(&msg);
         return result;
     }
+
     print_coap_msg("Parsed message:", &msg);
-    if (msg.ver != test_data->ver)
-    {
+    if (msg.ver != test_data->ver) {
         result = FAIL;
     }
-    if (msg.type != test_data->type)
-    {
+
+    if (msg.type != test_data->type) {
         result = FAIL;
     }
-    if (msg.token_len != test_data->token_len)
-    {
+
+    if (msg.token_len != test_data->token_len) {
         result = FAIL;
     }
-    if (msg.code_class != test_data->code_class)
-    {
+
+    if (msg.code_class != test_data->code_class) {
         result = FAIL;
     }
-    if (msg.code_detail != test_data->code_detail)
-    {
+
+    if (msg.code_detail != test_data->code_detail) {
         result = FAIL;
     }
-    if (msg.msg_id != test_data->msg_id)
-    {
+
+    if (msg.msg_id != test_data->msg_id) {
         result = FAIL;
     }
-    if (memcmp(msg.token, test_data->token, test_data->token_len) != 0)
-    {
+
+    if (memcmp(msg.token, test_data->token, test_data->token_len) != 0) {
         result = FAIL;
     }
+
     op = coap_msg_get_first_op(&msg);
-    for (i = 0; i < test_data->num_ops; i++)
-    {
-        if (op == NULL)
-        {
+    for (i = 0; i < test_data->num_ops; i++) {
+        if (op == NULL) {
             result = FAIL;
             break;
         }
-        if (coap_msg_op_get_num(op) != test_data->ops[i].num)
-        {
+
+        if (coap_msg_op_get_num(op) != test_data->ops[i].num) {
             result = FAIL;
         }
-        if (coap_msg_op_get_len(op) != test_data->ops[i].len)
-        {
+
+        if (coap_msg_op_get_len(op) != test_data->ops[i].len) {
             result = FAIL;
         }
-        if (memcmp(coap_msg_op_get_val(op), test_data->ops[i].val, test_data->ops[i].len) != 0)
-        {
+
+        if (memcmp(coap_msg_op_get_val(op), test_data->ops[i].val, test_data->ops[i].len) != 0) {
             result = FAIL;
         }
+
         op = coap_msg_op_get_next(op);
     }
-    if (op != NULL)
-    {
+
+    if (op != NULL) {
         result = FAIL;
     }
-    if (test_data->payload != NULL)
-    {
+
+    if (test_data->payload != NULL) {
         if ((msg.payload == NULL)
-         || (memcmp(msg.payload, test_data->payload, test_data->payload_len) != 0))
-        {
+         || (memcmp(msg.payload, test_data->payload, test_data->payload_len) != 0)) {
+            result = FAIL;
+        }
+    } else {
+        if (msg.payload != NULL) {
             result = FAIL;
         }
     }
-    else
-    {
-        if (msg.payload != NULL)
-        {
-            result = FAIL;
-        }
-    }
-    if (msg.payload_len != test_data->payload_len)
-    {
+
+    if (msg.payload_len != test_data->payload_len) {
         result = FAIL;
     }
+
     coap_msg_destroy(&msg);
     
     return result;
@@ -4340,6 +4336,7 @@ static test_result_t test_copy_func(test_data_t data)
     }
     coap_msg_destroy(&dst);
     coap_msg_destroy(&src);
+    
     return result;
 }
 
