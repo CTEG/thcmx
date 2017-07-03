@@ -31,6 +31,10 @@
  *  @brief Source file for the FreeCoAP client library
  */
 
+#include <sys/socket.h>
+#include <sys/timerfd.h>
+#include <sys/select.h>
+#include <linux/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,10 +43,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <sys/socket.h>
-#include <sys/timerfd.h>
-#include <sys/select.h>
-#include <linux/types.h>
+
 #ifdef COAP_DTLS_EN
 #include <gnutls/x509.h>
 #endif
@@ -881,6 +882,8 @@ static void coap_client_handle_format_error(coap_client_t * client, char *buf,
 		coap_client_send(client, &msg);
 		coap_msg_destroy(&msg);
 	}
+
+	return;
 }
 
 /**
@@ -996,6 +999,7 @@ static int coap_client_reject_non(coap_client_t * client, coap_msg_t * msg)
 {
 	coap_log_info("Rejecting non-confirmable message from host %s and port %s",
 				  client->server_host, client->server_port);
+
 	return 0;
 }
 
@@ -1012,6 +1016,7 @@ static int coap_client_reject_ack(coap_client_t * client, coap_msg_t * msg)
 {
 	coap_log_info("Rejecting acknowledgement message from host %s and port %s",
 				  client->server_host, client->server_port);
+
 	return 0;
 }
 
@@ -1028,6 +1033,7 @@ static int coap_client_reject_reset(coap_client_t * client, coap_msg_t * msg)
 {
 	coap_log_info("Rejecting reset message from host %s and port %s",
 				  client->server_host, client->server_port);
+	
 	return 0;
 }
 

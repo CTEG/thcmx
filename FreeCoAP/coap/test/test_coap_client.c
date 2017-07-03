@@ -56,7 +56,7 @@
 #define KEY_FILE_NAME    "./certs/client_privkey.pem"    /**< DTLS key file name */
 #define CRL_FILE_NAME    ""                              /**< DTLS certificate revocation list file name */
 #define COMMON_NAME      "dummy/server"                  /**< Common name of the server */
-#define SEP_URI_PATH     "separate"   /**< URI path option value to trigger a separate response from the server */
+#define SEP_URI_PATH     "separate" /**< URI path option value to trigger a separate response from the server */
 
 /**
  *  @brief Message option test data structure
@@ -71,13 +71,13 @@ typedef struct {
  *  @brief Client test message data structure
  */
 typedef struct {
-    coap_msg_type_t type;                        /**< Message type */
-    unsigned code_class;                         /**< Message code class */
-    unsigned code_detail;                        /**< Message code detail */
-    test_coap_client_msg_op_t *ops;              /**< Array of message option test data structures */
-    unsigned num_ops;                            /**< Size of the array of message option test data structures */
-    char *payload;                               /**< Buffer containing the payload */
-    size_t payload_len;                          /**< Length of the buffer containing the payload */
+    coap_msg_type_t type;               /**< Message type */
+    unsigned code_class;                /**< Message code class */
+    unsigned code_detail;               /**< Message code detail */
+    test_coap_client_msg_op_t *ops;     /**< Array of message option test data structures */
+    unsigned num_ops;                   /**< Size of the array of message option test data structures */
+    char *payload;                      /**< Buffer containing the payload */
+    size_t payload_len;                 /**< Length of the buffer containing the payload */
 } test_coap_client_msg_t;
 
 /**
