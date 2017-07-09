@@ -220,6 +220,7 @@ static coap_msg_op_t *coap_msg_op_new(unsigned num, unsigned len,
 
 	op->num = num;
 	op->len = len;
+
 	op->val = (char *)malloc(len);
 	if (op->val == NULL) {
 		free(op);
@@ -227,6 +228,7 @@ static coap_msg_op_t *coap_msg_op_new(unsigned num, unsigned len,
 	}
 
 	memcpy(op->val, val, len);
+
 	op->next = NULL;
 
 	return op;
@@ -241,6 +243,8 @@ static void coap_msg_op_delete(coap_msg_op_t * op)
 {
 	free(op->val);
 	free(op);
+
+	return;
 }
 
 /**
@@ -251,6 +255,8 @@ static void coap_msg_op_delete(coap_msg_op_t * op)
 static void coap_msg_op_list_create(coap_msg_op_list_t * list)
 {
 	memset(list, 0, sizeof(coap_msg_op_list_t));
+
+	return;
 }
 
 /**
@@ -272,6 +278,8 @@ static void coap_msg_op_list_destroy(coap_msg_op_list_t * list)
 	}
 
 	memset(list, 0, sizeof(coap_msg_op_list_t));
+
+	return;
 }
 
 /**
@@ -368,23 +376,33 @@ static int coap_msg_op_list_add(coap_msg_op_list_t * list, unsigned num,
 void coap_msg_create(coap_msg_t * msg)
 {
 	memset(msg, 0, sizeof(coap_msg_t));
+
 	msg->ver = COAP_MSG_VER;
+
 	coap_msg_op_list_create(&msg->op_list);
+
+	return;
 }
 
 void coap_msg_destroy(coap_msg_t * msg)
 {
 	coap_msg_op_list_destroy(&msg->op_list);
+
 	if (msg->payload != NULL) {
 		free(msg->payload);
 	}
+
 	memset(msg, 0, sizeof(coap_msg_t));
+
+	return;
 }
 
 void coap_msg_reset(coap_msg_t * msg)
 {
 	coap_msg_destroy(msg);
 	coap_msg_create(msg);
+
+	return;
 }
 
 /**
@@ -470,6 +488,7 @@ int coap_msg_parse_type_msg_id(char *buf, size_t len, unsigned *type,
 	if (len < 4) {
 		return -EBADMSG;
 	}
+
 	*type = (buf[0] >> 4) & 0x03;
 	*msg_id = ntohs(*((uint16_t *) (&buf[2])));
 
@@ -494,15 +513,18 @@ static ssize_t coap_msg_parse_hdr(coap_msg_t * msg, char *buf, size_t len)
 	if (len < 4) {
 		return -EBADMSG;
 	}
+
 	msg->ver = (p[0] >> 6) & 0x03;
 	if (msg->ver != COAP_MSG_VER) {
 		return -EINVAL;
 	}
+
 	msg->type = (p[0] >> 4) & 0x03;
 	msg->token_len = p[0] & 0x0f;
 	if (msg->token_len > sizeof(msg->token)) {
 		return -EBADMSG;
 	}
+
 	msg->code_detail = p[1] & 0x1f;
 	msg->code_class = (p[1] >> 5) & 0x07;
 	if ((msg->code_class != COAP_MSG_REQ)
@@ -564,13 +586,16 @@ static ssize_t coap_msg_parse_op(coap_msg_t * msg, char *buf, size_t len)
 	if (len < 1) {
 		return -EBADMSG;
 	}
+
 	op_delta = (p[0] >> 4) & 0x0f;
 	op_len = p[0] & 0x0f;
 	if ((op_delta == 15) || (op_len == 15)) {
 		return -EBADMSG;
 	}
+
 	p++;
 	len--;
+
 	if (op_delta == 13) {
 		if (len < 1) {
 			return -EBADMSG;
@@ -586,6 +611,7 @@ static ssize_t coap_msg_parse_op(coap_msg_t * msg, char *buf, size_t len)
 		p += 2;
 		len -= 2;
 	}
+
 	if (op_len == 13) {
 		if (len < 1) {
 			return -EBADMSG;
@@ -601,19 +627,23 @@ static ssize_t coap_msg_parse_op(coap_msg_t * msg, char *buf, size_t len)
 		p += 2;
 		len -= 2;
 	}
+
 	if (len < op_len) {
 		return -EBADMSG;
 	}
+
 	prev = coap_msg_op_list_get_last(&msg->op_list);
 	if (prev == NULL) {
 		op_num = op_delta;
 	} else {
 		op_num = coap_msg_op_get_num(prev) + op_delta;
 	}
+
 	ret = coap_msg_op_list_add_last(&msg->op_list, op_num, op_len, p);
 	if (ret < 0) {
 		return ret;
 	}
+
 	p += op_len;
 
 	return p - buf;
@@ -639,10 +669,12 @@ static ssize_t coap_msg_parse_ops(coap_msg_t * msg, char *buf, size_t len)
 		if (((p[0] & 0xff) == 0xff) || (len == 0)) {
 			break;
 		}
+
 		num = coap_msg_parse_op(msg, p, len);
 		if (num < 0) {
 			return num;
 		}
+
 		p += num;
 		len -= num;
 	}
@@ -668,18 +700,23 @@ static ssize_t coap_msg_parse_payload(coap_msg_t * msg, char *buf, size_t len)
 	if (len == 0) {
 		return 0;
 	}
+
 	if ((p[0] & 0xff) != 0xff) {
 		return -EBADMSG;
 	}
+
 	p++;
 	len--;
+
 	if (len == 0) {
 		return -EBADMSG;
 	}
+
 	msg->payload = (char *)malloc(len);
 	if (msg->payload == NULL) {
 		return -ENOMEM;
 	}
+
 	memcpy(msg->payload, p, len);
 	msg->payload_len = len;
 	p += len;
@@ -698,15 +735,19 @@ ssize_t coap_msg_parse(coap_msg_t * msg, char *buf, size_t len)
 		coap_msg_destroy(msg);
 		return num;
 	}
+
 	p += num;
 	len -= num;
+
 	num = coap_msg_parse_token(msg, p, len);
 	if (num < 0) {
 		coap_msg_destroy(msg);
 		return num;
 	}
+
 	p += num;
 	len -= num;
+
 	num = coap_msg_parse_ops(msg, p, len);
 	if (num < 0) {
 		coap_msg_destroy(msg);
@@ -787,6 +828,7 @@ int coap_msg_add_op(coap_msg_t * msg, unsigned num, unsigned len,
 int coap_msg_set_payload(coap_msg_t * msg, char *buf, size_t len)
 {
 	msg->payload_len = 0;
+
 	if (msg->payload != NULL) {
 		free(msg->payload);
 		msg->payload = NULL;
@@ -1021,24 +1063,31 @@ ssize_t coap_msg_format(coap_msg_t * msg, char *buf, size_t len)
 	if (ret != 0) {
 		return ret;
 	}
+
 	num = coap_msg_format_hdr(msg, p, len);
 	if (num < 0) {
 		return num;
 	}
+
 	p += num;
 	len -= num;
+
 	num = coap_msg_format_token(msg, p, len);
 	if (num < 0) {
 		return num;
 	}
+
 	p += num;
 	len -= num;
+
 	num = coap_msg_format_ops(msg, p, len);
 	if (num < 0) {
 		return num;
 	}
+
 	p += num;
 	len -= num;
+
 	num = coap_msg_format_payload(msg, p, len);
 	if (num < 0) {
 		return num;
