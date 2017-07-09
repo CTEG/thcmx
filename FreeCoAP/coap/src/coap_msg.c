@@ -363,6 +363,7 @@ static int coap_msg_op_list_add(coap_msg_op_list_t * list, unsigned num,
 			prev->next = op;
 			return 0;
 		}
+
 		prev = prev->next;
 	}
 
@@ -458,6 +459,7 @@ unsigned coap_msg_check_critical_ops(coap_msg_t * msg)
 			&& (!coap_msg_op_num_is_recognized(num))) {
 			return num;			/* fail */
 		}
+
 		op = coap_msg_op_get_next(op);
 	}
 
@@ -520,12 +522,14 @@ static ssize_t coap_msg_parse_hdr(coap_msg_t * msg, char *buf, size_t len)
 	}
 
 	msg->type = (p[0] >> 4) & 0x03;
+
 	msg->token_len = p[0] & 0x0f;
 	if (msg->token_len > sizeof(msg->token)) {
 		return -EBADMSG;
 	}
 
 	msg->code_detail = p[1] & 0x1f;
+
 	msg->code_class = (p[1] >> 5) & 0x07;
 	if ((msg->code_class != COAP_MSG_REQ)
 		&& (msg->code_class != COAP_MSG_SUCCESS)
@@ -718,6 +722,7 @@ static ssize_t coap_msg_parse_payload(coap_msg_t * msg, char *buf, size_t len)
 	}
 
 	memcpy(msg->payload, p, len);
+
 	msg->payload_len = len;
 	p += len;
 
@@ -730,6 +735,7 @@ ssize_t coap_msg_parse(coap_msg_t * msg, char *buf, size_t len)
 	char *p = buf;
 
 	coap_msg_reset(msg);
+
 	num = coap_msg_parse_hdr(msg, p, len);
 	if (num < 0) {
 		coap_msg_destroy(msg);
@@ -814,6 +820,7 @@ int coap_msg_set_token(coap_msg_t * msg, char *buf, size_t len)
 	}
 
 	memcpy(msg->token, buf, len);
+
 	msg->token_len = len;
 
 	return 0;
@@ -839,7 +846,9 @@ int coap_msg_set_payload(coap_msg_t * msg, char *buf, size_t len)
 		if (msg->payload == NULL) {
 			return -ENOMEM;
 		}
+
 		memcpy(msg->payload, buf, len);
+
 		msg->payload_len = len;
 	}
 
@@ -871,6 +880,7 @@ static ssize_t coap_msg_format_hdr(coap_msg_t * msg, char *buf, size_t len)
 	buf[1] = (char)(((msg->code_class & 0x07) << 5)
 					| (msg->code_detail & 0x1f));
 	msg_id = htons(msg->msg_id);
+
 	memcpy(&buf[2], &msg_id, 2);
 
 	return 4;
@@ -958,6 +968,7 @@ static ssize_t coap_msg_format_op(coap_msg_op_t * op, unsigned prev_num,
 	} else {
 		p[0] |= op->len;
 	}
+
 	p++;
 	len--;
 
@@ -987,6 +998,7 @@ static ssize_t coap_msg_format_op(coap_msg_op_t * op, unsigned prev_num,
 
 	/* option value */
 	memcpy(p, op->val, op->len);
+
 	p += op->len;
 
 	return p - buf;
@@ -1048,6 +1060,7 @@ static ssize_t coap_msg_format_payload(coap_msg_t * msg, char *buf, size_t len)
 	}
 
 	buf[0] = 0xff;
+
 	memcpy(&buf[1], msg->payload, msg->payload_len);
 
 	return msg->payload_len + 1;
@@ -1092,6 +1105,7 @@ ssize_t coap_msg_format(coap_msg_t * msg, char *buf, size_t len)
 	if (num < 0) {
 		return num;
 	}
+	
 	p += num;
 
 	return p - buf;

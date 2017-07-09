@@ -85,6 +85,7 @@ typedef enum {
     COAP_MSG_RST = 0x3                                       /**< Reset message */
 } coap_msg_type_t;
 
+
 /**
  *  @brief Code class enumeration
  */
@@ -95,6 +96,7 @@ typedef enum {
     COAP_MSG_SERVER_ERR = 5,                              /**< Server error response */
 } coap_msg_class_t;
 
+
 /**
  *  @brief Code detail enumeration
  */
@@ -104,6 +106,7 @@ typedef enum {
     COAP_MSG_PUT = 3,                                                           /**< Put request method */
     COAP_MSG_DELETE = 4                                                          /**< Delete request method */
 } coap_msg_method_t;
+
 
 /**
  *  @brief Success response code detail enumeration
@@ -116,6 +119,7 @@ typedef enum {
     COAP_MSG_CONTENT = 5,                                                       /**< Content success response */
     COAP_MSG_CONTINUE = 31                                                      /**< Continue success response */
 } coap_msg_success_t;
+
 
 /**
  *  @brief Client error response code detail enumeration
@@ -134,6 +138,7 @@ typedef enum {
     COAP_MSG_UNSUP_CONT_FMT = 15                                                /**< Unsupported content-format client error */
 } coap_msg_client_err_t;
 
+
 /**
  *  @brief Server error response code detail enumeration
  */
@@ -145,6 +150,7 @@ typedef enum {
     COAP_MSG_GATEWAY_TIMEOUT = 4,                                               /**< Gateway timeout server error */
     COAP_MSG_PROXY_NOT_SUP = 5                                                  /**< Proxying not supported server error */
 } coap_msg_server_err_t;
+
 
 /**
  *  @brief Option number enumeration
@@ -170,6 +176,7 @@ typedef enum {
     COAP_MSG_SIZE1 = 60                                                         /**< Size1 option number */
 } coap_msg_op_num_t;
 
+
 /**
  *  @brief Option structure
  */
@@ -180,6 +187,7 @@ typedef struct coap_msg_op {
     struct coap_msg_op *next;                  /**< Pointer to the next option structure in the list */
 } coap_msg_op_t;
 
+
 /**
  *  @brief Option linked-list structure
  */
@@ -187,6 +195,7 @@ typedef struct {
     coap_msg_op_t *first;                               /**< Pointer to the first option structure in the list */
     coap_msg_op_t *last;                                /**< Pointer to the last option structure in the list */
 } coap_msg_op_list_t;
+
 
 /**
  *  @brief Message structure
@@ -204,6 +213,7 @@ typedef struct {
     size_t payload_len;                                                         /**< Length of the payload */
 } coap_msg_t;
 
+
 /**
  *  @brief Check if option is recognized
  *
@@ -214,6 +224,7 @@ typedef struct {
  *  @retval 0 Option is not recognized
  */
 int coap_msg_op_num_is_recognized(unsigned num);
+
 
 /**
  *  @brief Parse Block1 or Block2 option value
@@ -230,6 +241,7 @@ int coap_msg_op_num_is_recognized(unsigned num);
  */
 int coap_msg_op_parse_block_val(unsigned *num, unsigned *more, unsigned *size, const char *val, unsigned len);
 
+
 /**
  *  @brief Format Block1 or Block2 option value
  *
@@ -245,6 +257,7 @@ int coap_msg_op_parse_block_val(unsigned *num, unsigned *more, unsigned *size, c
  */
 int coap_msg_op_format_block_val(char *val, unsigned len, unsigned num, unsigned more, unsigned size);
 
+
 /**
  *  @brief Generate a random string of bytes
  *
@@ -253,12 +266,14 @@ int coap_msg_op_format_block_val(char *val, unsigned len, unsigned num, unsigned
  */
 void coap_msg_gen_rand_str(char *buf, size_t len);
 
+
 /**
  *  @brief Initialise a message structure
  *
  *  @param[out] msg Pointer to a message structure
  */
 void coap_msg_create(coap_msg_t *msg);
+
 
 /**
  *  @brief Deinitialise a message structure
@@ -267,12 +282,14 @@ void coap_msg_create(coap_msg_t *msg);
  */
 void coap_msg_destroy(coap_msg_t *msg);
 
+
 /**
  *  @brief Deinitialise and initialise a message structure
  *
  *  @param[in,out] msg Pointer to a message structure
  */
 void coap_msg_reset(coap_msg_t *msg);
+
 
 /**
  *  @brief Check that all of the critical options in a message are recognized
@@ -285,6 +302,7 @@ void coap_msg_reset(coap_msg_t *msg);
  */
 unsigned coap_msg_check_critical_ops(coap_msg_t *msg);
 
+
 /**
  *  @brief Check that all of the unsafe options in a message are recognized
  *
@@ -295,6 +313,7 @@ unsigned coap_msg_check_critical_ops(coap_msg_t *msg);
  *  @retval >0 Bad option number
  */
 unsigned coap_msg_check_unsafe_ops(coap_msg_t *msg);
+
 
 /**
  *  @brief Extract the type and message ID values from a message
@@ -314,6 +333,7 @@ unsigned coap_msg_check_unsafe_ops(coap_msg_t *msg);
  */
 int coap_msg_parse_type_msg_id(char *buf, size_t len, unsigned *type, unsigned *msg_id);
 
+
 /**
  *  @brief Parse a message
  *
@@ -327,6 +347,7 @@ int coap_msg_parse_type_msg_id(char *buf, size_t len, unsigned *type, unsigned *
  */
 ssize_t coap_msg_parse(coap_msg_t *msg, char *buf, size_t len);
 
+
 /**
  *  @brief Set the type in a message
  *
@@ -338,6 +359,7 @@ ssize_t coap_msg_parse(coap_msg_t *msg, char *buf, size_t len);
  *  @retval <0 Error
  */
 int coap_msg_set_type(coap_msg_t *msg, unsigned type);
+
 
 /**
  *  @brief Set the code in a message
@@ -352,6 +374,7 @@ int coap_msg_set_type(coap_msg_t *msg, unsigned type);
  */
 int coap_msg_set_code(coap_msg_t *msg, unsigned code_class, unsigned code_detail);
 
+
 /**
  *  @brief Set the message ID in a message
  *
@@ -363,6 +386,7 @@ int coap_msg_set_code(coap_msg_t *msg, unsigned code_class, unsigned code_detail
  *  @retval <0 Error
  */
 int coap_msg_set_msg_id(coap_msg_t *msg, unsigned msg_id);
+
 
 /**
  *  @brief Set the token in a message
@@ -377,6 +401,7 @@ int coap_msg_set_msg_id(coap_msg_t *msg, unsigned msg_id);
  */
 int coap_msg_set_token(coap_msg_t *msg, char *buf, size_t len);
 
+
 /**
  *  @brief Add a token to a message structure
  *
@@ -390,6 +415,7 @@ int coap_msg_set_token(coap_msg_t *msg, char *buf, size_t len);
  *  @retval <0 Error
  */
 int coap_msg_add_op(coap_msg_t *msg, unsigned num, unsigned len, const char *val);
+
 
 /**
  *  @brief Set the payload in a message
@@ -409,6 +435,7 @@ int coap_msg_add_op(coap_msg_t *msg, unsigned num, unsigned len, const char *val
  */
 int coap_msg_set_payload(coap_msg_t *msg, char *buf, size_t len);
 
+
 /**
  *  @brief Format a message
  *
@@ -421,6 +448,7 @@ int coap_msg_set_payload(coap_msg_t *msg, char *buf, size_t len);
  *  @retval <0 Error
  */
 ssize_t coap_msg_format(coap_msg_t *msg, char *buf, size_t len);
+
 
 /**
  *  @brief Copy a message
