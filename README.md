@@ -10,3 +10,13 @@
 [CoAP协议学习笔记——CoAP格式详解](http://www.bitscn.com/network/protocol/201505/509226.html) 
 [CoAP 命令行工具集](https://www.phodal.com/blog/coap-command-line-tools-set/)  
 [一步步搭建物联网系统——RESTful的CoAP协议](https://segmentfault.com/a/1190000002511350)  
+[CoAP client and CoAP server examples](https://cesanta.com/blog/coap-client-and-coap-server-examples-mongoose-more-than-an-embedded-web-server/)  
+
+
+#mongoose
+[Web服务器 Mongoose 的介绍与安装](http://www.open-open.com/lib/view/open1328604070405.html)  
+
+
+#Opensource
+
+[mongoose](https://github.com/cesanta/mongoose)  

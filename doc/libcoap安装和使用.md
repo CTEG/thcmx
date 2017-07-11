@@ -25,7 +25,7 @@ $ sudo make install
 
 进入`example`文件夹，在该文件夹中还有两个可执行文件，`coap-client`和`coap-server`。`coap-client`提供非常丰富的客户端测试指令，而`coap-server`提供一个较为简单的服务器端功能。
 
-在开始服务器端测试之前，必须知晓服务器端的`IP`地址。在`firefox`中安装`copper`插件，浏览器地址栏中输入`coap://10.13.11.85`，点击工具栏中的`GET`按钮，那么coap-server便会返回内容。
+在开始服务器端测试之前，必须知晓服务器端的`IP`地址。在`firefox`中安装`copper`插件，浏览器地址栏中输入`coap://xxx.xxx.xxx.xxx`，点击工具栏中的`GET`按钮，那么coap-server便会返回内容。
 
 
 # 客户端测试
