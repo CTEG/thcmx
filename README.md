@@ -11,6 +11,9 @@
 [CoAP 命令行工具集](https://www.phodal.com/blog/coap-command-line-tools-set/)  
 [一步步搭建物联网系统——RESTful的CoAP协议](https://segmentfault.com/a/1190000002511350)  
 [CoAP client and CoAP server examples](https://cesanta.com/blog/coap-client-and-coap-server-examples-mongoose-more-than-an-embedded-web-server/)  
+[canopus](https://github.com/zubairhamed/canopus)  
+
+[《IoT In 5 Days》中文版](https://tidyjiang8.gitbooks.io/iot-in-5-days-chinese/content/)  
 
 
 #mongoose
@@ -19,4 +22,5 @@
 
 #Opensource
 
-[mongoose](https://github.com/cesanta/mongoose)  
+[mongoose](https://github.com/cesanta/mongoose) 
+[tinydtls-coap](https://github.com/thecodemaiden/tinydtls-coap)   
